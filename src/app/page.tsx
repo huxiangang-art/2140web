@@ -33,7 +33,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-6xl mx-auto">
-      <Nav active="/" />
+      <Nav active="/" loggedIn={loggedIn} />
       <AutoRefresh intervalMs={30000} />
 
       {data?.pool ? (
