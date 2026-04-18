@@ -181,3 +181,8 @@ export async function submitGeneSequencing(cookie: string, body: string) {
   const res = await req('/geneSequencing/submit_selected_question/', { method: 'POST', body }, cookie)
   return res
 }
+
+export async function getPropPath(cookie: string) {
+  const res = await req('/prop/get_prop_path/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
