@@ -184,11 +184,16 @@ function BranchModal({ map, onClose }: { map: BranchMap; onClose: () => void }) 
         onClick={e => e.stopPropagation()}>
 
         {/* Animated GIF header */}
-        <div className="relative h-36 overflow-hidden">
+        <div className="relative overflow-hidden" style={{ background: '#000' }}>
           <img src={`/racewar/racewar_map_contact_top_bg${gifIdx}.gif`} alt={map.name}
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ filter: isDead ? 'grayscale(1) brightness(0.4)' : 'brightness(0.8)' }} />
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 20%, rgba(8,8,16,0.92) 100%)' }} />
+            className="w-full block"
+            style={{
+              maxHeight: '60vh',
+              objectFit: 'contain',
+              filter: isDead ? 'grayscale(1) brightness(0.4)' : undefined,
+            }} />
+          <div className="absolute inset-x-0 bottom-0 h-20"
+            style={{ background: 'linear-gradient(to bottom, transparent, rgba(8,8,16,0.95))' }} />
           <button type="button" onClick={onClose}
             className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/50 flex items-center justify-center text-white/60 hover:text-white transition-colors">
             ✕
