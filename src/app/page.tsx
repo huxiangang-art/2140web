@@ -5,6 +5,7 @@ import { AgentFeed } from '@/components/AgentFeed'
 import { AutoRefresh } from '@/components/AutoRefresh'
 import { Nav } from '@/components/Nav'
 import { getHashratePool, getRanks, login, getUserInfo } from '@/lib/api2140'
+import { EventFeed } from '@/components/EventFeed'
 import { cookies } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
@@ -42,8 +43,9 @@ export default async function Home() {
             <RaceBar pool={data.pool} />
             <RankTable ranks={data.ranks ?? []} />
           </div>
-          <div className="space-y-4">
+          <div className="space-y-6">
             <AgentFeed />
+            <EventFeed />
           </div>
         </div>
       ) : (
