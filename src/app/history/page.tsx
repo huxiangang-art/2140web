@@ -42,7 +42,7 @@ export default async function HistoryPage() {
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
-      <Nav active="/history" />
+      <Nav active="/history" loggedIn={false} />
 
       <div className="mb-6">
         <h2 className="text-xl font-bold text-white font-mono">文明史 · 硅基记录</h2>

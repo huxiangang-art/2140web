@@ -1,9 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Countdown } from './Countdown'
+import { HashrateInput } from './HashrateInput'
+import { AutoRefresh } from './AutoRefresh'
 
 interface Props {
   pool: {
+    seq: string
     name: string
     total_count: string
     reward_amount: string
@@ -13,9 +16,10 @@ interface Props {
     user_hashrate: string
     user_hashrate_inputed: number
   }
+  loggedIn?: boolean
 }
 
-export function HashratePool({ pool }: Props) {
+export function HashratePool({ pool, loggedIn }: Props) {
   const invested = pool.user_hashrate_inputed > 0
 
   return (
@@ -23,9 +27,18 @@ export function HashratePool({ pool }: Props) {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-white font-mono text-sm">算力池 · {pool.name}</CardTitle>
-          <Badge variant={invested ? 'default' : 'outline'} className="text-xs font-mono">
-            {invested ? '已投入' : '未投入'}
-          </Badge>
+          <div className="flex items-center gap-2">
+            {loggedIn && !invested && (
+              <HashrateInput
+                poolSeq={pool.seq}
+                userHashrate={parseInt(pool.user_hashrate)}
+                onSuccess={() => {}}
+              />
+            )}
+            <Badge variant={invested ? 'default' : 'outline'} className="text-xs font-mono">
+              {invested ? '已投入' : '未投入'}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent>

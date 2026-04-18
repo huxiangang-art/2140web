@@ -74,3 +74,10 @@ export async function addProposal(cookie: string, title: string, content: string
     body: `title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`,
   }, cookie)
 }
+
+export async function inputHashrate(cookie: string, poolSeq: string, amount: number) {
+  return req('/hashratePool/input_hashrate/', {
+    method: 'POST',
+    body: `pool_seq=${poolSeq}&amount=${amount}`,
+  }, cookie)
+}

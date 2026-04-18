@@ -51,7 +51,7 @@ export default async function RacesPage() {
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
-      <Nav active="/races" />
+      <Nav active="/races" loggedIn={false} />
 
       <div className="mb-6">
         <h2 className="text-xl font-bold text-white font-mono">种族档案</h2>
