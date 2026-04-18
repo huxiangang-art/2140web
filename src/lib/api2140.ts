@@ -96,3 +96,23 @@ export async function getUserInvite(cookie: string) {
   const res = await req('/user/get_user_invite_count/', {}, cookie)
   return res.ret === 0 ? res.data : null
 }
+
+export async function getSpeeches() {
+  const res = await req('/racePlaza/get_speechs/')
+  return res.ret === 0 ? res.data : []
+}
+
+export async function getBills(cookie: string) {
+  const res = await req('/parliament/get_bills/0/', {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+
+export async function getParliamentUser(cookie: string) {
+  const res = await req('/parliament/get_parliament_user/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+
+export async function getBulletins(cookie: string) {
+  const res = await req('/bulletin/get_bulletins/', {}, cookie)
+  return res.ret === 0 ? res.data : []
+}

@@ -5,9 +5,11 @@ const links = [
   { href: '/history',  label: '文明史' },
   { href: '/citycode', label: '法典' },
   { href: '/races',    label: '种族' },
-  { href: '/chat',     label: 'GPT-X' },
-  { href: '/write',    label: '写作' },
-  { href: '/profile',  label: '档案' },
+  { href: '/plaza',      label: '广场' },
+  { href: '/parliament', label: '议事厅' },
+  { href: '/chat',       label: 'GPT-X' },
+  { href: '/write',      label: '写作' },
+  { href: '/profile',    label: '档案' },
 ]
 
 export function Nav({ active, loggedIn }: { active: string; loggedIn?: boolean }) {
