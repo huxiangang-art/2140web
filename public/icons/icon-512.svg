@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#0a0a0a"/>
+  <rect x="16" y="16" width="480" height="480" rx="70" fill="none" stroke="#f97316" stroke-width="4" opacity="0.4"/>
+  <text x="256" y="200" font-family="monospace" font-size="96" font-weight="bold" fill="#f97316" text-anchor="middle">2140</text>
+  <text x="256" y="270" font-family="monospace" font-size="32" fill="#f97316" text-anchor="middle" opacity="0.6">文明演化</text>
+  <circle cx="256" cy="370" r="48" fill="none" stroke="#f97316" stroke-width="3" opacity="0.3"/>
+  <circle cx="256" cy="370" r="10" fill="#f97316" opacity="0.6"/>
+  <line x1="256" y1="322" x2="256" y2="298" stroke="#f97316" stroke-width="3" opacity="0.3"/>
+  <line x1="256" y1="418" x2="256" y2="442" stroke="#f97316" stroke-width="3" opacity="0.3"/>
+  <line x1="208" y1="370" x2="184" y2="370" stroke="#f97316" stroke-width="3" opacity="0.3"/>
+  <line x1="304" y1="370" x2="328" y2="370" stroke="#f97316" stroke-width="3" opacity="0.3"/>
+</svg>
