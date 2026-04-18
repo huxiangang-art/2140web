@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -71,13 +70,13 @@ export default function LoginPage() {
             {error && (
               <p className="text-xs text-red-400 font-mono">{error}</p>
             )}
-            <Button
+            <button
               type="submit"
               disabled={loading}
-              className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/10 font-mono text-sm"
+              className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/10 rounded px-4 py-2 font-mono text-sm transition-colors disabled:opacity-50"
             >
               {loading ? '验证中...' : '进入城邦'}
-            </Button>
+            </button>
           </form>
           <p className="text-xs text-white/20 text-center mt-4 font-mono">
             使用 2140city.cn 账号登录
