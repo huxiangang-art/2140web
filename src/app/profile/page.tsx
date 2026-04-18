@@ -6,13 +6,18 @@ import { getUserInfo, getUserHashrate, getUserTotalToken, getUserInvite, RACE_NA
 export const dynamic = 'force-dynamic'
 
 async function getProfileData(cookie: string) {
-  const [infoRes, hashrates, token, invite] = await Promise.all([
+  const results = await Promise.allSettled([
     getUserInfo(cookie),
     getUserHashrate(cookie),
     getUserTotalToken(cookie),
     getUserInvite(cookie),
   ])
-  const info = infoRes?.ret === 0 ? infoRes.data : null
+  const [infoRes, hashratesRes, tokenRes, inviteRes] = results
+  const infoRaw = infoRes.status === 'fulfilled' ? infoRes.value : null
+  const info = infoRaw?.ret === 0 ? infoRaw.data : null
+  const hashrates = hashratesRes.status === 'fulfilled' ? hashratesRes.value : []
+  const token = tokenRes.status === 'fulfilled' ? tokenRes.value : null
+  const invite = inviteRes.status === 'fulfilled' ? inviteRes.value : null
   return { info, hashrates, token, invite }
 }
 
@@ -83,7 +88,7 @@ export default async function ProfilePage() {
               )}
               {recentRounds.map((r: any) => {
                 const h = parseInt(r.hashrate_sum ?? 0)
-                const maxH = Math.max(...recentRounds.map((x: any) => parseInt(x.hashrate_sum ?? 0)), 1)
+                const maxH = recentRounds.reduce((m: number, x: any) => Math.max(m, parseInt(x.hashrate_sum ?? 0)), 1)
                 const pct = (h / maxH) * 100
                 return (
                   <div key={r.pool_seq} className="flex items-center gap-3">
