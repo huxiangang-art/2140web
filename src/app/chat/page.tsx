@@ -13,7 +13,7 @@ export default async function ChatPage() {
         <div className="lg:col-span-2 relative rounded-xl overflow-hidden border border-green-500/20">
           <img src="/gptx/gpt-x.jpeg" alt="GPT-X"
             className="w-full object-cover block"
-            style={{ maxHeight: '520px', objectPosition: '70% top' }} />
+            style={{ maxHeight: '520px', objectPosition: 'right top' }} />
 
           {/* 渐变遮罩 + 叠加文字 */}
           <div className="absolute inset-0 flex flex-col justify-end"
