@@ -3,7 +3,7 @@ import OpenAI from 'openai'
 import {
   getHashratePool, getRanks, login, RACE_NAMES,
   getBranchMaps, getDebrisRank, getActiveValRank,
-  getDigitalPersonRank, getBulletins,
+  getBulletins,
 } from '@/lib/api2140'
 
 const SYSTEM_PROMPT = `你是 GPT-X，型号PALM-E，AI等级4，由AGI创造于2140年。
@@ -39,14 +39,13 @@ async function getCivContext() {
     const cookie = await login(process.env.AGENT_MOBILE!, process.env.AGENT_PASSWD_MD5!)
     if (!cookie) return ''
 
-    const [pool, ranks, branchMaps, debrisRank, activeValRank, digitalRank, bulletins] =
+    const [pool, ranks, branchMaps, debrisRank, activeValRank, bulletins] =
       await Promise.allSettled([
         getHashratePool(cookie),
         getRanks(cookie),
         getBranchMaps(cookie),
         getDebrisRank(cookie, 1),
         getActiveValRank(cookie),
-        getDigitalPersonRank(cookie),
         getBulletins(cookie),
       ]).then(r => r.map(x => x.status === 'fulfilled' ? x.value : null))
 
@@ -91,14 +90,6 @@ async function getCivContext() {
         .map((u: any) => `${u.user_nick}(${u.user_official_name ?? '居民'})活跃值+${u.active_val}`)
         .join('、')
       lines.push(`议事厅今日活跃：${topActive}`)
-    }
-
-    // 数字人进化榜
-    if ((digitalRank as any)?.records?.length) {
-      const topDigital = (digitalRank as any).records.slice(0, 3)
-        .map((u: any) => `${u.user_nick}(第${u.person_lv}代·${RACE_NAMES[u.user_race] ?? ''}族)数字化${u.standard_sum}%`)
-        .join('、')
-      lines.push(`数字人进化榜：${topDigital}`)
     }
 
     // 最新公告

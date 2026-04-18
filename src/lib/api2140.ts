@@ -147,11 +147,6 @@ export async function getCreationRank(cookie: string) {
   return res.ret === 0 ? res.data : null
 }
 
-export async function getDigitalPersonRank(cookie: string) {
-  const res = await req('/digitalPerson/get_rank/', {}, cookie)
-  return res.ret === 0 ? res.data : null
-}
-
 export async function getTimeNodes(cookie: string) {
   const res = await req('/write/get_time_nodes/1', {}, cookie)
   return res.ret === 0 ? res.data : []
