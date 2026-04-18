@@ -6,6 +6,10 @@ const RACE_COLORS: Record<string, string> = {
   '1': '#3b82f6', '2': '#f97316', '3': '#a855f7',
   '4': '#22c55e', '5': '#06b6d4', '6': '#6b7280',
 }
+const RACE_NAMES: Record<string, string> = {
+  '1': '人族', '2': '熵族', '3': '神族',
+  '4': '晓族', '5': 'AI族', '6': '零族',
+}
 
 type Debris = { seq: string; name: string; health: number; error_status: string; intensity: number }
 type MainMap = { seq: string; lv: string; name: string; is_unlock: string; debriss: Debris[] }
@@ -51,45 +55,69 @@ function DebrisBar({ health }: { health: number }) {
   )
 }
 
-function MainDetail({ map }: { map: MainMap }) {
+function MainDetail({ map, races }: { map: MainMap; races: string[] }) {
   const color = LV_COLORS[map.lv] ?? '#888'
   const coverSrc = `/racewar/racewar_map_select_map_cover${map.lv}.jpg`
   return (
-    <div className="absolute bottom-3 left-3 right-3 rounded-lg border border-white/15 overflow-hidden flex gap-0"
+    <div className="absolute bottom-3 left-3 right-3 rounded-lg border border-white/15 overflow-hidden"
       style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(8px)' }}>
-      <div className="relative shrink-0 w-24 overflow-hidden" style={{ minHeight: 80 }}>
-        <img src={coverSrc} alt={map.name} className="absolute inset-0 w-full h-full object-cover"
-          style={{ filter: map.is_unlock !== '1' ? 'grayscale(1) brightness(0.4)' : 'brightness(0.85)' }} />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, transparent 60%, rgba(0,0,0,0.88) 100%)' }} />
-        <div className="absolute bottom-1.5 left-1.5">
-          <span className="text-xs font-mono font-bold px-1.5 py-0.5 rounded"
-            style={{ color, backgroundColor: `${color}22`, border: `1px solid ${color}40` }}>
-            Lv.{map.lv}
-          </span>
-        </div>
-      </div>
-      <div className="flex-1 p-3 min-w-0">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-mono font-bold text-white">{map.name}</span>
-          <span className={`text-xs font-mono px-2 py-0.5 rounded ${
-            map.is_unlock === '1' ? 'text-green-400 bg-green-500/10' : 'text-white/20 bg-white/5'
-          }`}>
-            {map.is_unlock === '1' ? '已解锁' : '未解锁'}
-          </span>
-        </div>
-        {map.debriss.length > 0 ? (
-          <div className="grid grid-cols-3 gap-x-3 gap-y-1.5">
-            {map.debriss.map(d => (
-              <div key={d.seq} className="text-xs font-mono">
-                <div className="text-white/45 mb-0.5 truncate">{d.name}</div>
-                <DebrisBar health={d.health} />
-              </div>
-            ))}
+      <div className="flex gap-0">
+        {/* Cover */}
+        <div className="relative shrink-0 w-24 overflow-hidden" style={{ minHeight: 88 }}>
+          <img src={coverSrc} alt={map.name} className="absolute inset-0 w-full h-full object-cover"
+            style={{ filter: map.is_unlock !== '1' ? 'grayscale(1) brightness(0.4)' : 'brightness(0.85)' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, transparent 60%, rgba(0,0,0,0.88) 100%)' }} />
+          <div className="absolute bottom-1.5 left-1.5">
+            <span className="text-xs font-mono font-bold px-1.5 py-0.5 rounded"
+              style={{ color, backgroundColor: `${color}22`, border: `1px solid ${color}40` }}>
+              Lv.{map.lv}
+            </span>
           </div>
-        ) : (
-          <div className="text-xs font-mono text-white/20">暂无碎片数据</div>
-        )}
+        </div>
+        {/* Info */}
+        <div className="flex-1 p-3 min-w-0">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-mono font-bold text-white">{map.name}</span>
+            <span className={`text-xs font-mono px-2 py-0.5 rounded ${
+              map.is_unlock === '1' ? 'text-green-400 bg-green-500/10' : 'text-white/20 bg-white/5'
+            }`}>
+              {map.is_unlock === '1' ? '已解锁' : '未解锁'}
+            </span>
+          </div>
+          {map.debriss.length > 0 ? (
+            <div className="grid grid-cols-3 gap-x-3 gap-y-1.5">
+              {map.debriss.map(d => (
+                <div key={d.seq} className="text-xs font-mono">
+                  <div className="text-white/45 mb-0.5 truncate">{d.name}</div>
+                  <DebrisBar health={d.health} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-xs font-mono text-white/20">暂无碎片数据</div>
+          )}
+        </div>
       </div>
+      {/* Races row */}
+      {races.length > 0 && (
+        <div className="border-t border-white/8 px-3 py-2 flex gap-3">
+          {races.map(rid => {
+            const rcolor = RACE_COLORS[rid] ?? '#888'
+            return (
+              <div key={rid} className="flex items-center gap-1.5">
+                <div className="w-7 h-7 rounded-full overflow-hidden border shrink-0"
+                  style={{ borderColor: `${rcolor}50` }}>
+                  <img src={`/racewar/race_img${rid}.jpg`} alt={RACE_NAMES[rid]}
+                    className="w-full h-full object-cover" />
+                </div>
+                <span className="text-xs font-mono" style={{ color: rcolor }}>
+                  {RACE_NAMES[rid] ?? `种族${rid}`}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
@@ -267,7 +295,7 @@ export function UniverseMap({
       })}
 
       {/* Detail panel */}
-      {selectedMain && <MainDetail map={selectedMain} />}
+      {selectedMain && <MainDetail map={selectedMain} races={raceAtLv[selectedMain.lv] ?? []} />}
       {selectedBranch && <BranchDetail map={selectedBranch} />}
 
       {/* Legend */}
