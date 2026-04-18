@@ -121,7 +121,7 @@ export default async function ProfilePage() {
             <div className="border border-cyan-500/20 rounded-lg p-5 space-y-4"
               style={{ background: 'linear-gradient(135deg, rgba(6,182,212,0.05) 0%, rgba(0,0,0,0) 100%)' }}>
               <div className="flex items-center justify-between">
-                <div className="text-xs font-mono text-white/30">数字人</div>
+                <a href="/digital" className="text-xs font-mono text-white/30 hover:text-cyan-400 transition-colors">数字人 →</a>
                 {myRankEntry && myRankEntry.rank !== '未入榜' && (
                   <div className="text-xs font-mono text-cyan-400/60">#{myRankEntry.rank}</div>
                 )}
