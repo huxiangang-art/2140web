@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist_Mono } from 'next/font/google'
 import { RegisterSW } from '@/components/RegisterSW'
+import { SessionRestore } from '@/components/SessionRestore'
 import './globals.css'
 
 const mono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] })
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh" className={`${mono.variable} dark h-full`}>
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
         <RegisterSW />
+        <SessionRestore />
         {children}
       </body>
     </html>

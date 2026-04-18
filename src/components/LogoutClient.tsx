@@ -7,8 +7,8 @@ export function LogoutClient() {
 
   async function logout() {
     await fetch('/api/auth', { method: 'DELETE' })
-    router.push('/')
-    router.refresh()
+    localStorage.removeItem('2140_session')
+    window.location.href = '/'
   }
 
   return (

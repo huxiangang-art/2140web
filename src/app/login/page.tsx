@@ -23,6 +23,7 @@ export default function LoginPage() {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error); return }
+      if (data.token) localStorage.setItem('2140_session', data.token)
       window.location.href = '/'
     } catch {
       setError('网络错误，请重试')

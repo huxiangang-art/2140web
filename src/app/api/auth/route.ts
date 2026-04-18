@@ -15,12 +15,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '手机号或密码错误' }, { status: 401 })
   }
 
-  const res = NextResponse.json({ ok: true })
+  const res = NextResponse.json({ ok: true, token: cookie })
   res.cookies.set('ci_session', cookie, {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 7天
+    maxAge: 60 * 60 * 24 * 30,
     path: '/',
   })
   return res
