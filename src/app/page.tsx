@@ -3,6 +3,7 @@ import { RaceBar } from '@/components/RaceBar'
 import { RankTable } from '@/components/RankTable'
 import { AgentFeed } from '@/components/AgentFeed'
 import { AutoRefresh } from '@/components/AutoRefresh'
+import { Nav } from '@/components/Nav'
 import { getHashratePool, getRanks, login } from '@/lib/api2140'
 
 export const dynamic = 'force-dynamic'
@@ -26,16 +27,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-6xl mx-auto">
-      <header className="mb-8 border-b border-white/10 pb-6">
-        <div className="flex items-baseline gap-3">
-          <h1 className="text-3xl font-bold tracking-tight text-white">2140</h1>
-          <span className="text-sm text-white/40">未来之城 · SG城邦</span>
-        </div>
-        <p className="mt-1 text-xs text-white/30 font-mono">
-          算力即权力 · 春蚕计划 · 六族博弈 · GPT-X 观察中
-        </p>
-      </header>
-
+      <Nav active="/" />
       <AutoRefresh intervalMs={30000} />
 
       {data?.pool ? (
