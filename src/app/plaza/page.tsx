@@ -1,6 +1,6 @@
 import { Nav } from '@/components/Nav'
 import { getLoggedIn } from '@/lib/auth'
-import { getSpeeches, RACE_NAMES, RACE_COLORS } from '@/lib/api2140'
+import { getSpeeches, login, RACE_NAMES, RACE_COLORS } from '@/lib/api2140'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,7 +9,11 @@ const SPEECH_LABEL: Record<string, string> = {
 }
 
 export default async function PlazaPage() {
-  const [speeches, loggedIn] = await Promise.all([getSpeeches(), getLoggedIn()])
+  const [loggedIn, sysCookie] = await Promise.all([
+    getLoggedIn(),
+    login(process.env.AGENT_MOBILE!, process.env.AGENT_PASSWD_MD5!),
+  ])
+  const speeches = sysCookie ? await getSpeeches(sysCookie) : []
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">

@@ -97,8 +97,8 @@ export async function getUserInvite(cookie: string) {
   return res.ret === 0 ? res.data : null
 }
 
-export async function getSpeeches() {
-  const res = await req('/racePlaza/get_speechs/')
+export async function getSpeeches(cookie: string) {
+  const res = await req('/racePlaza/get_speechs/', {}, cookie)
   return res.ret === 0 ? res.data : []
 }
 
