@@ -12,29 +12,37 @@ const STARTERS = [
 function useTTS() {
   const [speaking, setSpeaking] = useState(false)
   const [autoSpeak, setAutoSpeak] = useState(false)
-
-  const speak = useCallback((text: string) => {
-    if (!window.speechSynthesis) return
-    window.speechSynthesis.cancel()
-    const utt = new SpeechSynthesisUtterance(text)
-    utt.lang = 'zh-CN'
-    utt.rate = 0.9
-    utt.pitch = 0.7  // slightly lower pitch for robotic feel
-    // prefer a female zh voice if available
-    const voices = window.speechSynthesis.getVoices()
-    const zhVoice = voices.find(v => v.lang.startsWith('zh') && v.name.toLowerCase().includes('female'))
-      ?? voices.find(v => v.lang.startsWith('zh'))
-    if (zhVoice) utt.voice = zhVoice
-    utt.onstart = () => setSpeaking(true)
-    utt.onend = () => setSpeaking(false)
-    utt.onerror = () => setSpeaking(false)
-    window.speechSynthesis.speak(utt)
-  }, [])
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const stop = useCallback(() => {
-    window.speechSynthesis?.cancel()
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.src = ''
+    }
     setSpeaking(false)
   }, [])
+
+  const speak = useCallback(async (text: string) => {
+    stop()
+    setSpeaking(true)
+    try {
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      })
+      if (!res.ok) throw new Error()
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const audio = new Audio(url)
+      audioRef.current = audio
+      audio.onended = () => { setSpeaking(false); URL.revokeObjectURL(url) }
+      audio.onerror = () => { setSpeaking(false); URL.revokeObjectURL(url) }
+      audio.play()
+    } catch {
+      setSpeaking(false)
+    }
+  }, [stop])
 
   return { speaking, autoSpeak, setAutoSpeak, speak, stop }
 }
