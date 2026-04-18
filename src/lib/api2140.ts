@@ -136,3 +136,13 @@ export async function getDigitalPersonRank(cookie: string) {
   const res = await req('/digitalPerson/get_rank/', {}, cookie)
   return res.ret === 0 ? res.data : null
 }
+
+export async function getTimeNodes(cookie: string) {
+  const res = await req('/write/get_time_nodes/1', {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+
+export async function getTheme8(cookie: string) {
+  const res = await req('/write/get_theme8/2', {}, cookie)
+  return res.ret === 0 ? res.data : []
+}

@@ -8,6 +8,7 @@ const links = [
   { href: '/racewar',    label: '战争' },
   { href: '/plaza',      label: '广场' },
   { href: '/parliament', label: '议事厅' },
+  { href: '/world',      label: '世界观' },
   { href: '/chat',       label: 'GPT-X' },
   { href: '/write',      label: '写作' },
   { href: '/profile',    label: '档案' },
