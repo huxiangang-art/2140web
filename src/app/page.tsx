@@ -2,6 +2,7 @@ import { HashratePool } from '@/components/HashratePool'
 import { RaceBar } from '@/components/RaceBar'
 import { RankTable } from '@/components/RankTable'
 import { AgentFeed } from '@/components/AgentFeed'
+import { AutoRefresh } from '@/components/AutoRefresh'
 import { getHashratePool, getRanks, login } from '@/lib/api2140'
 
 export const dynamic = 'force-dynamic'
@@ -34,6 +35,8 @@ export default async function Home() {
           算力即权力 · 春蚕计划 · 六族博弈 · GPT-X 观察中
         </p>
       </header>
+
+      <AutoRefresh intervalMs={30000} />
 
       {data?.pool ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
