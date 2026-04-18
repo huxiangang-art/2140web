@@ -6,6 +6,7 @@ const links = [
   { href: '/citycode', label: '法典' },
   { href: '/races',    label: '种族' },
   { href: '/racewar',    label: '战争' },
+  { href: '/map',        label: '宇宙地图' },
   { href: '/parliament', label: '议事厅' },
   { href: '/world',      label: '世界观' },
   { href: '/archive/index.html', label: '记忆回溯' },
