@@ -23,8 +23,7 @@ export default function LoginPage() {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error); return }
-      router.push('/')
-      router.refresh()
+      window.location.href = '/'
     } catch {
       setError('网络错误，请重试')
     } finally {

@@ -2,6 +2,7 @@ import { Nav } from '@/components/Nav'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { getLoggedIn } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,7 +30,7 @@ async function getLogs() {
 }
 
 export default async function HistoryPage() {
-  const logs = await getLogs()
+  const [logs, loggedIn] = await Promise.all([getLogs(), getLoggedIn()])
 
   const byRound = logs.reduce((acc: Record<string, any[]>, log: any) => {
     const key = log.round_seq ?? 'unknown'
@@ -42,7 +43,7 @@ export default async function HistoryPage() {
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
-      <Nav active="/history" loggedIn={false} />
+      <Nav active="/history" loggedIn={loggedIn} />
 
       <div className="mb-6">
         <h2 className="text-xl font-bold text-white font-mono">文明史 · 硅基记录</h2>

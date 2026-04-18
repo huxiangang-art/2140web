@@ -1,6 +1,7 @@
 import { Nav } from '@/components/Nav'
 import { getHashratePool, getRanks, login, RACE_NAMES, RACE_COLORS } from '@/lib/api2140'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getLoggedIn } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,7 +38,7 @@ async function getData() {
 }
 
 export default async function RacesPage() {
-  const { pool, ranks } = await getData()
+  const [{ pool, ranks }, loggedIn] = await Promise.all([getData(), getLoggedIn()])
 
   const total = pool ? parseInt(pool.total_count) : 0
   const detail = pool?.hashrate_pool_detail ?? {}
@@ -51,7 +52,7 @@ export default async function RacesPage() {
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
-      <Nav active="/races" loggedIn={false} />
+      <Nav active="/races" loggedIn={loggedIn} />
 
       <div className="mb-6">
         <h2 className="text-xl font-bold text-white font-mono">种族档案</h2>

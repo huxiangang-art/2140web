@@ -2,6 +2,7 @@ import { Nav } from '@/components/Nav'
 import { getProposals, login, RACE_NAMES, RACE_COLORS } from '@/lib/api2140'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { getLoggedIn } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,11 +24,11 @@ async function getData() {
 }
 
 export default async function CitycodeePage() {
-  const proposals = await getData()
+  const [proposals, loggedIn] = await Promise.all([getData(), getLoggedIn()])
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
-      <Nav active="/citycode" loggedIn={false} />
+      <Nav active="/citycode" loggedIn={loggedIn} />
 
       <div className="mb-6">
         <h2 className="text-xl font-bold text-white font-mono">城邦法典</h2>
