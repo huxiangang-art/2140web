@@ -31,15 +31,20 @@ function useTTS() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        console.error('TTS route returned', res.status, await res.text())
+        throw new Error()
+      }
       const blob = await res.blob()
+      console.log('TTS blob size:', blob.size, blob.type)
       const url = URL.createObjectURL(blob)
       const audio = new Audio(url)
       audioRef.current = audio
       audio.onended = () => { setSpeaking(false); URL.revokeObjectURL(url) }
-      audio.onerror = () => { setSpeaking(false); URL.revokeObjectURL(url) }
+      audio.onerror = (e) => { console.error('audio error', e); setSpeaking(false); URL.revokeObjectURL(url) }
       audio.play()
-    } catch {
+    } catch (e) {
+      console.error('TTS error:', e)
       setSpeaking(false)
     }
   }, [stop])

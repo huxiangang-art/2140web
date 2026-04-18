@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { NextRequest } from 'next/server'
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts'
 
