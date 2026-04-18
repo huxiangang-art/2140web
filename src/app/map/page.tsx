@@ -39,9 +39,9 @@ export default async function MapPage() {
 
       {situation ? (
         <UniverseMap
-          mainMaps={situation.main_maps ?? []}
+          mainMaps={situation.maps ?? []}
           branchMaps={branchMaps ?? []}
-          tasks={tasks}
+          tasks={situation.tasks ?? tasks}
         />
       ) : (
         <div className="text-xs font-mono text-white/30">暂无地图数据</div>

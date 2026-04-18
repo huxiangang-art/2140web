@@ -26,7 +26,7 @@ const BRANCH_GIF: Record<string, string> = {
 
 type Debris = { seq: string; name: string; health: number; error_status: string; intensity: number }
 type MainMap = { seq: string; lv: string; name: string; is_unlock: string; debriss: Debris[] }
-type BranchMap = { seq: string; name: string; health: number; debriss: Debris[] }
+type BranchMap = { seq: string; name: string; health: number; debriss: Debris[]; desc?: string; thumbnail?: string; bg?: string; creator_name?: string }
 type Tasks = Record<string, { lv: string }>
 
 const MAIN_POSITIONS: Record<string, { x: number; y: number }> = {
@@ -145,13 +145,14 @@ function MainModal({ map, races, onClose }: { map: MainMap; races: string[]; onC
                   return (
                     <div key={d.seq} className="rounded-lg p-2.5 border border-white/8"
                       style={{ background: 'rgba(255,255,255,0.03)' }}>
-                      <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center justify-between mb-1">
                         <span className="text-xs font-mono text-white/70 truncate">{d.name}</span>
                         <span className="text-xs font-mono ml-2 shrink-0"
                           style={{ color: isDead ? '#ef4444' : hp < 200 ? '#f59e0b' : '#22c55e' }}>
-                          {isDead ? '已陷落' : hp}
+                          {isDead ? '陷落' : hp}
                         </span>
                       </div>
+                      {(d as any).id && <div className="text-xs font-mono text-white/20 mb-1">{(d as any).id}</div>}
                       <DebrisBar health={hp} />
                     </div>
                   )
@@ -174,41 +175,50 @@ function BranchModal({ map, onClose }: { map: BranchMap; onClose: () => void }) 
   const color = isDead ? '#ef4444' : '#22d3ee'
   const gifIdx = BRANCH_GIF[map.seq] ?? '1'
   const debriss = map.debriss ?? []
+  const headerSrc = map.bg || map.thumbnail || `/racewar/racewar_map_contact_top_bg${gifIdx}.gif`
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}
       onClick={onClose}>
-      <div className="w-full max-w-lg rounded-xl overflow-hidden border border-white/15 shadow-2xl"
+      <div className="w-full max-w-lg rounded-xl overflow-hidden border border-white/15 shadow-2xl max-h-[90vh] overflow-y-auto"
         style={{ background: '#080810' }}
         onClick={e => e.stopPropagation()}>
 
-        {/* Animated GIF header */}
-        <div className="relative overflow-hidden" style={{ background: '#000' }}>
-          <img src={`/racewar/racewar_map_contact_top_bg${gifIdx}.gif`} alt={map.name}
-            className="w-full block"
-            style={{
-              maxHeight: '60vh',
-              objectFit: 'contain',
-              filter: isDead ? 'grayscale(1) brightness(0.4)' : undefined,
-            }} />
-          <div className="absolute inset-x-0 bottom-0 h-20"
-            style={{ background: 'linear-gradient(to bottom, transparent, rgba(8,8,16,0.95))' }} />
+        {/* Header image */}
+        <div className="relative h-44 overflow-hidden shrink-0">
+          <img src={headerSrc} alt={map.name}
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ filter: isDead ? 'grayscale(1) brightness(0.4)' : 'brightness(0.75)' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(8,8,16,0.95) 100%)' }} />
           <button type="button" onClick={onClose}
             className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/50 flex items-center justify-center text-white/60 hover:text-white transition-colors">
             ✕
           </button>
-          <div className="absolute bottom-3 left-4 flex items-center gap-2">
-            <span className="text-lg font-bold font-mono text-white">{map.name}</span>
-            <span className="text-xs font-mono px-1.5 py-0.5 rounded"
-              style={{ color, backgroundColor: `${color}15`, border: `1px solid ${color}40` }}>
-              {isDead ? '已陷落' : `HP ${map.health}`}
-            </span>
+          <div className="absolute bottom-3 left-4">
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-lg font-bold font-mono text-white">{map.name}</span>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded"
+                style={{ color, backgroundColor: `${color}15`, border: `1px solid ${color}40` }}>
+                {isDead ? '已陷落' : `HP ${map.health}`}
+              </span>
+            </div>
+            {map.creator_name && (
+              <div className="text-xs font-mono text-white/30">创建者：{map.creator_name}</div>
+            )}
           </div>
         </div>
 
-        <div className="p-4">
-          {debriss.length > 0 ? (
+        <div className="p-4 space-y-4">
+          {/* Description */}
+          {map.desc && (
+            <div>
+              <div className="text-xs font-mono text-white/25 mb-1.5">世界观</div>
+              <p className="text-xs font-mono text-white/55 leading-relaxed">{map.desc}</p>
+            </div>
+          )}
+
+          {debriss.length > 0 && (
             <div>
               <div className="text-xs font-mono text-white/30 mb-2">支线碎片 · {debriss.length}处</div>
               <div className="grid grid-cols-2 gap-2">
@@ -231,8 +241,6 @@ function BranchModal({ map, onClose }: { map: BranchMap; onClose: () => void }) 
                 })}
               </div>
             </div>
-          ) : (
-            <div className="text-center py-4 text-xs font-mono text-white/20">暂无碎片数据</div>
           )}
         </div>
       </div>
