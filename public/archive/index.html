@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>2140：The Silicon Archives</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22none%22 stroke=%22%2300f3ff%22 stroke-width=%228%22/><path d=%22M30 50 Q50 20 70 50 T30 50%22 fill=%22%2300f3ff%22 opacity=%220.6%22/></svg>">
+    <style>
+        :root { --neon-blue: #00f3ff; --neon-green: #39ff14; --neon-red: #ff003c; --bg-dark: #0a0a0b; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg-dark); font-family: 'Consolas', 'Segoe UI', monospace; overflow: hidden; color: white; }
+        #video-container { position: relative; width: 100%; height: 100%; background: black; }
+        video { position: absolute; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.8s; }
+        .video-hidden { opacity: 0; z-index: 1; pointer-events: none; }
+        .video-active { opacity: 1; z-index: 2; pointer-events: auto; }
+        #crt-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 4000; pointer-events: none; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%); background-size: 100% 3px; opacity: 0.4; }
+
+        /* 旋转提示：增强视觉对比 */
+        #dynamic-hint { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: var(--neon-blue); }
+        .rotate-icon { width: 60px; height: 60px; border: 2px solid currentColor; border-radius: 10px; margin-bottom: 25px; animation: rotate-anim 2s infinite ease-in-out; position: relative; }
+        .rotate-icon::after { content: ""; position: absolute; top: 10%; left: 10%; width: 80%; height: 80%; border: 1px solid currentColor; opacity: 0.3; }
+        @keyframes rotate-anim { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+
+        /* UI 布局自适应 */
+        #ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; pointer-events: none; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 80px; transition: all 0.5s; }
+        .mode-landscape #ui-overlay { align-items: flex-start; padding-left: 5%; }
+        .mode-portrait #ui-overlay { align-items: center; padding-left: 0; }
+        
+        #choices-box { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 420px; pointer-events: none; }
+        .choice-btn { pointer-events: auto; width: 85%; padding: 18px; background: rgba(0, 15, 25, 0.9); border-left: 4px solid var(--neon-blue); color: var(--neon-blue); text-align: left; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; backdrop-filter: blur(15px); display: none; }
+        .mode-portrait .choice-btn { text-align: center; border-left: 1px solid var(--neon-blue); border-bottom: 4px solid var(--neon-blue); border-radius: 4px; }
+        .choice-btn:active { background: rgba(0, 243, 255, 0.2); border-color: var(--neon-green); }
+
+        #progress-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; height: 8px; background: rgba(255,255,255,0.1); z-index: 9000; }
+        #progress-bar { width: 0%; height: 100%; background: var(--neon-blue); box-shadow: 0 0 12px var(--neon-blue); }
+        #volume-toggle { position: fixed; bottom: 30px; right: 30px; z-index: 1000; width: 44px; height: 44px; border: 1px solid var(--neon-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--neon-blue); cursor: pointer; pointer-events: auto; backdrop-filter: blur(5px); }
+        
+        #logo-opening { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1.2s; }
+        .logo-svg { width: 110px; stroke: var(--neon-blue); fill: none; stroke-dasharray: 500; stroke-dashoffset: 500; animation: logo-draw 3s forwards; }
+        @keyframes logo-draw { to { stroke-dashoffset: 0; } }
+    </style>
+</head>
+<body class="mode-landscape">
+    <div id="dynamic-hint">
+        <div class="rotate-icon"></div>
+        <div id="hint-text" style="letter-spacing: 4px; font-size: 15px; font-weight: bold;">探测到感知场偏移</div>
+        <div id="hint-sub" style="font-size: 11px; opacity: 0.7; margin-top: 12px;">正在重塑视域：请旋转您的终端</div>
+    </div>
+
+    <div id="crt-overlay"></div>
+    <div id="logo-opening">
+        <svg class="logo-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45"/></svg>
+        <div style="margin-top:25px; letter-spacing:10px; color:var(--neon-blue); font-size:11px; opacity: 0.8;">QUANTUM SCHOOL</div>
+    </div>
+
+    <div id="volume-toggle" onclick="toggleVolume(event)">🔇</div>
+    <div id="progress-wrapper"><div id="progress-bar"></div></div>
+    
+    <div id="video-container">
+        <video id="video-a" class="video-active" playsinline muted></video>
+        <video id="video-b" class="video-hidden" playsinline muted></video>
+    </div>
+
+    <div id="ui-overlay"><div id="choices-box"></div></div>
+
+    <script>
+        const storyGraphUrl = './src/data/story-graph.json';
+        let storyData, currentNode, isMuted = true;
+        let activePlayer = document.getElementById('video-a'), idlePlayer = document.getElementById('video-b');
+
+        // 终极检测逻辑：多点触发 + 轮询校验
+        function checkOrientation() {
+            // 如果视频还没准备好，等待 metadata
+            if (activePlayer.videoWidth === 0) return;
+
+            const isPortrait = window.innerHeight > window.innerWidth;
+            const videoIsPortrait = activePlayer.videoHeight > activePlayer.videoWidth;
+            const hint = document.getElementById('dynamic-hint');
+            
+            console.log(`Checking: Video(${videoIsPortrait ? 'P' : 'L'}) vs Phone(${isPortrait ? 'P' : 'L'})`);
+
+            if (videoIsPortrait && !isPortrait) {
+                document.getElementById('hint-text').innerText = "探测到感性矩阵";
+                document.getElementById('hint-sub').innerText = "请旋转至 [竖屏] 以观察艺术细节";
+                hint.style.display = 'flex';
+                hint.style.color = 'var(--neon-green)';
+                document.body.className = 'mode-portrait';
+            } else if (!videoIsPortrait && isPortrait) {
+                document.getElementById('hint-text').innerText = "探测到逻辑坍塌";
+                document.getElementById('hint-sub').innerText = "请旋转至 [横屏] 以重组电影记忆";
+                hint.style.display = 'flex';
+                hint.style.color = 'var(--neon-blue)';
+                document.body.className = 'mode-landscape';
+            } else {
+                hint.style.display = 'none';
+                document.body.className = videoIsPortrait ? 'mode-portrait' : 'mode-landscape';
+            }
+        }
+
+        // 监听浏览器窗口变化
+        window.addEventListener('resize', checkOrientation);
+
+        function playNode(nodeId) {
+            currentNode = storyData.nodes.find(n => n.id === nodeId);
+            if (!currentNode) return;
+
+            // 预设路径，避免空格导致的加载失败
+            const videoUrl = storyData.config.defaultVideoPath + encodeURIComponent(currentNode.video).replace(/%2F/g, '/');
+            console.log("Loading node:", currentNode.id, "Video:", videoUrl);
+
+            idlePlayer.src = videoUrl; idlePlayer.load();
+
+            // 1. 尝试在元数据加载时检查
+            idlePlayer.onloadedmetadata = () => { checkOrientation(); };
+
+            idlePlayer.oncanplaythrough = () => {
+                activePlayer.pause(); activePlayer.ontimeupdate = null;
+                activePlayer.classList.replace('video-active', 'video-hidden');
+                idlePlayer.classList.replace('video-hidden', 'video-active');
+                let temp = activePlayer; activePlayer = idlePlayer; idlePlayer = temp;
+                
+                // 2. 切换完成后，立即检查
+                checkOrientation();
+                
+                activePlayer.ontimeupdate = updateProgress;
+                activePlayer.play();
+                
+                // 3. 开始播放瞬间再次校准（防止某些浏览器延迟更新 videoWidth）
+                activePlayer.onplaying = () => { checkOrientation(); };
+
+                document.getElementById('choices-box').innerHTML = '';
+            };
+        }
+
+        function updateProgress() {
+            if (activePlayer.duration) {
+                document.getElementById('progress-bar').style.width = (activePlayer.currentTime / activePlayer.duration) * 100 + '%';
+                if (activePlayer.currentTime >= currentNode.interactionTime && document.getElementById('choices-box').innerHTML === '') {
+                    // 弹出选项时再检查一遍方向，确保不遮挡
+                    checkOrientation();
+                    showChoices();
+                }
+            }
+        }
+
+        function showChoices() {
+            const box = document.getElementById('choices-box'); box.innerHTML = '';
+            currentNode.options.forEach((opt, i) => {
+                setTimeout(() => {
+                    const btn = document.createElement('div'); btn.className = 'choice-btn';
+                    btn.style.display = 'block'; btn.innerText = opt.text;
+                    btn.onclick = (e) => { e.stopPropagation(); playNode(opt.targetNode); };
+                    box.appendChild(btn);
+                }, i * 150);
+            });
+        }
+
+        function toggleVolume(e) { e.stopPropagation(); isMuted = !isMuted; activePlayer.muted = isMuted; document.getElementById('volume-toggle').innerText = isMuted ? '🔇' : '🔊'; }
+
+        async function init() {
+            const res = await fetch(storyGraphUrl); storyData = await res.json();
+            document.body.onclick = () => {
+                if(!currentNode) {
+                    if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+                    document.getElementById('logo-opening').style.opacity = '0';
+                    setTimeout(() => document.getElementById('logo-opening').style.display='none', 1000);
+                    isMuted = false; activePlayer.muted = false; document.getElementById('volume-toggle').innerText = '🔊';
+                    playNode('intro_start');
+                }
+            };
+        }
+        init();
+    </script>
+</body>
+</html>

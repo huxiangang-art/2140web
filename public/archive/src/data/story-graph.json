@@ -1,0 +1,66 @@
+{
+  "project": "2140：自适应双向引导版",
+  "version": "1.6.0",
+  "config": { "defaultVideoPath": "/videos/", "preloadOffset": 5 },
+  "nodes": [
+    {
+      "id": "intro_start",
+      "video": "AI电影/5、2140·图灵梦境/图灵梦境定稿.m4v",
+      "orientation": "landscape",
+      "title": "序章：觉醒",
+      "interactionTime": 5,
+      "options": [
+        { "text": "追求科学真理", "targetNode": "science_path" },
+        { "text": "回溯艺术灵魂", "targetNode": "art_path" }
+      ]
+    },
+    {
+      "id": "art_path",
+      "video": "AI TIME名画视频/02世界名画对话/世界名画的小心机（终3）.mov",
+      "orientation": "landscape",
+      "title": "感性：名画的低语",
+      "interactionTime": 5,
+      "options": [
+        { "text": "进入名画展厅 (竖屏模式)", "targetNode": "art_monalisa" }
+      ]
+    },
+    {
+      "id": "art_monalisa",
+      "video": "AI TIME名画视频/01单个名画/01蒙娜丽莎.mov",
+      "orientation": "portrait",
+      "title": "名画：蒙娜丽莎",
+      "interactionTime": 5,
+      "options": [
+        { "text": "上传记忆并返回横屏", "targetNode": "convergence_jump" }
+      ]
+    },
+    {
+      "id": "science_path",
+      "video": "AI电影/3、巅峰之战/索维尔会议.mp4",
+      "orientation": "landscape",
+      "title": "科学：人类智力巅峰",
+      "interactionTime": 5,
+      "options": [
+        { "text": "跃迁至2140", "targetNode": "convergence_jump" }
+      ]
+    },
+    {
+      "id": "convergence_jump",
+      "video": "2140-preview-en.mov",
+      "orientation": "landscape",
+      "title": "跃迁：2140未来景象",
+      "interactionTime": 5,
+      "options": [
+        { "text": "连接新丝绸之路", "targetNode": "final_silk_road" }
+      ]
+    },
+    {
+      "id": "final_silk_road",
+      "video": "AI电影/6、2140 丝绸之路/丝绸之路.mp4",
+      "orientation": "landscape",
+      "title": "终焉：文明的归宿",
+      "interactionTime": 10,
+      "isEnding": true
+    }
+  ]
+}
