@@ -28,8 +28,8 @@ export default async function ProfilePage() {
   const cookie = await getUserCookie()
   const { info, hashrateStat, token, invite } = await getProfileData(cookie!)
 
-  const raceColor = info ? (RACE_COLORS[info.race_id] ?? '#888') : '#888'
-  const raceName = info ? (RACE_NAMES[info.race_id] ?? '未知') : '未知'
+  const raceColor = info ? (RACE_COLORS[info.race] ?? '#888') : '#888'
+  const raceName = info ? (RACE_NAMES[info.race] ?? '未知') : '未知'
 
   const currentHashrate = parseInt(hashrateStat?.hashrate ?? '0')
   const totalHashrate = parseInt(hashrateStat?.total_hashrate ?? '0')
@@ -57,7 +57,7 @@ export default async function ProfilePage() {
             </div>
 
             <div className="space-y-2 pt-2 border-t border-white/5">
-              <StatRow label="等级" value={`Lv.${info?.level ?? '—'}`} />
+              <StatRow label="种族等级" value={`Lv.${info?.race_lv ?? '—'}`} />
               <StatRow label="手机" value={info?.mobile ? `${info.mobile.slice(0, 3)}****${info.mobile.slice(-4)}` : '—'} />
               <StatRow label="邀请码" value={invite?.invite_code ?? '—'} highlight />
             </div>
