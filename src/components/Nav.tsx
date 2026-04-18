@@ -9,6 +9,8 @@ const links = [
   { href: '/parliament', label: '议事厅' },
   { href: '/world',      label: '世界观' },
   { href: '/archive/index.html', label: '记忆回溯' },
+  { href: '/turing',     label: '图灵测试' },
+  { href: '/gene',       label: '基因测序' },
   { href: '/chat',       label: 'GPT-X' },
   { href: '/write',      label: '写作' },
   { href: '/profile',    label: '档案' },

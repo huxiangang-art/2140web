@@ -161,3 +161,23 @@ export async function getDebrisRank(cookie: string, mapSeq = 1) {
   const res = await req(`/racewar/get_debris_rank/${mapSeq}/`, {}, cookie)
   return res.ret === 0 ? res.data : null
 }
+
+export async function getTotalRank(cookie: string, mapSeq = 1) {
+  const res = await req(`/racewar/get_total_rank/${mapSeq}`, {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+
+export async function getGenesisKeysUsers(cookie: string) {
+  const res = await req('/genesisKeys/get_genesis_keys_users/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+
+export async function getGeneQuestions(cookie: string) {
+  const res = await req('/geneSequencing/get_questions/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+
+export async function submitGeneSequencing(cookie: string, body: string) {
+  const res = await req('/geneSequencing/submit_selected_question/', { method: 'POST', body }, cookie)
+  return res
+}
