@@ -6,6 +6,7 @@ import { AutoRefresh } from '@/components/AutoRefresh'
 import { Nav } from '@/components/Nav'
 import { getHashratePool, getRanks, login, getUserInfo } from '@/lib/api2140'
 import { EventFeed } from '@/components/EventFeed'
+import { BulletinBanner } from '@/components/BulletinBanner'
 import { cookies } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
@@ -35,6 +36,7 @@ export default async function Home() {
     <main className="min-h-screen p-4 md:p-8 max-w-6xl mx-auto">
       <Nav active="/" loggedIn={loggedIn} />
       <AutoRefresh intervalMs={30000} />
+      <BulletinBanner />
 
       {data?.pool ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

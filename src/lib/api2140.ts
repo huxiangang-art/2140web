@@ -116,3 +116,23 @@ export async function getBulletins(cookie: string) {
   const res = await req('/bulletin/get_bulletins/', {}, cookie)
   return res.ret === 0 ? res.data : []
 }
+
+export async function getBranchMaps(cookie: string) {
+  const res = await req('/racewar/get_branch_maps/', {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+
+export async function getMapSituation(cookie: string) {
+  const res = await req('/racewar/get_map_situation/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+
+export async function getCreationRank(cookie: string) {
+  const res = await req('/racewar/get_creation_index_rank/1/0/3/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+
+export async function getDigitalPersonRank(cookie: string) {
+  const res = await req('/digitalPerson/get_rank/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
