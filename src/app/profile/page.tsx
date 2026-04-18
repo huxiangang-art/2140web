@@ -12,13 +12,13 @@ async function getProfileData(cookie: string) {
     getUserTotalToken(cookie),
     getUserInvite(cookie),
   ])
-  const [infoRes, hashratesRes, tokenRes, inviteRes] = results
+  const [infoRes, hashrateRes, tokenRes, inviteRes] = results
   const infoRaw = infoRes.status === 'fulfilled' ? infoRes.value : null
   const info = infoRaw?.ret === 0 ? infoRaw.data : null
-  const hashrates = hashratesRes.status === 'fulfilled' ? hashratesRes.value : []
+  const hashrateStat = hashrateRes.status === 'fulfilled' ? hashrateRes.value : null
   const token = tokenRes.status === 'fulfilled' ? tokenRes.value : null
   const invite = inviteRes.status === 'fulfilled' ? inviteRes.value : null
-  return { info, hashrates, token, invite }
+  return { info, hashrateStat, token, invite }
 }
 
 export default async function ProfilePage() {
@@ -26,14 +26,14 @@ export default async function ProfilePage() {
   if (!loggedIn) redirect('/login')
 
   const cookie = await getUserCookie()
-  const { info, hashrates, token, invite } = await getProfileData(cookie!)
+  const { info, hashrateStat, token, invite } = await getProfileData(cookie!)
 
   const raceColor = info ? (RACE_COLORS[info.race_id] ?? '#888') : '#888'
   const raceName = info ? (RACE_NAMES[info.race_id] ?? '未知') : '未知'
 
-  // compute cumulative stats from history
-  const totalEver = hashrates?.reduce((s: number, r: any) => s + parseInt(r.hashrate_sum ?? 0), 0) ?? 0
-  const recentRounds = hashrates?.slice(0, 10) ?? []
+  const currentHashrate = parseInt(hashrateStat?.hashrate ?? '0')
+  const totalHashrate = parseInt(hashrateStat?.total_hashrate ?? '0')
+  const roundCount = parseInt(hashrateStat?.r_count ?? '0')
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
@@ -67,44 +67,40 @@ export default async function ProfilePage() {
           <div className="border border-white/10 rounded-lg p-5 space-y-3">
             <div className="text-xs font-mono text-white/30 mb-2">经济账户</div>
             <StatRow label="累计代币" value={token ? `${parseFloat(token).toFixed(2)} T` : '—'} highlight />
-            <StatRow label="邀请人数" value={invite?.count !== undefined ? `${invite.count} 人` : '—'} />
-            <StatRow label="邀请等级" value={invite?.level !== undefined ? `Lv.${invite.level}` : '—'} />
+            <StatRow label="邀请人数" value={invite?.invite_count !== undefined ? `${invite.invite_count} 人` : '—'} />
+            <StatRow label="邀请等级" value={invite?.lv !== undefined ? `Lv.${invite.lv}` : '—'} />
           </div>
         </div>
 
-        {/* 算力历史 */}
+        {/* 算力统计 */}
         <div className="md:col-span-2 space-y-4">
           <div className="border border-white/10 rounded-lg p-5">
             <div className="text-xs font-mono text-white/30 mb-4">算力统计</div>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <BigStat label="历史总算力" value={`${totalEver.toLocaleString()} H`} color={raceColor} />
-              <BigStat label="参与轮次" value={`${hashrates?.length ?? 0} 轮`} color={raceColor} />
+            <div className="grid grid-cols-3 gap-4">
+              <BigStat label="当前算力" value={`${currentHashrate.toLocaleString()} H`} color={raceColor} />
+              <BigStat label="历史总算力" value={`${totalHashrate.toLocaleString()} H`} color={raceColor} />
+              <BigStat label="参与轮次" value={`${roundCount} 轮`} color={raceColor} />
             </div>
+          </div>
 
-            <div className="text-xs font-mono text-white/30 mb-3">最近10轮记录</div>
-            <div className="space-y-1.5">
-              {recentRounds.length === 0 && (
-                <div className="text-xs text-white/20 font-mono py-4 text-center">暂无记录</div>
-              )}
-              {recentRounds.map((r: any) => {
-                const h = parseInt(r.hashrate_sum ?? 0)
-                const maxH = recentRounds.reduce((m: number, x: any) => Math.max(m, parseInt(x.hashrate_sum ?? 0)), 1)
-                const pct = (h / maxH) * 100
-                return (
-                  <div key={r.pool_seq} className="flex items-center gap-3">
-                    <span className="text-xs font-mono text-white/30 w-16 shrink-0">R{r.pool_seq}</span>
-                    <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{ width: `${pct}%`, backgroundColor: raceColor }}
-                      />
-                    </div>
-                    <span className="text-xs font-mono text-white/60 w-20 text-right shrink-0">
-                      {h.toLocaleString()} H
-                    </span>
-                  </div>
-                )
-              })}
+          {/* 算力条 */}
+          {totalHashrate > 0 && (
+            <div className="border border-white/10 rounded-lg p-5">
+              <div className="text-xs font-mono text-white/30 mb-4">算力分布</div>
+              <div className="space-y-3">
+                <BarStat label="当前算力" value={currentHashrate} max={totalHashrate} color={raceColor} />
+                <BarStat label="沉淀算力" value={totalHashrate - currentHashrate} max={totalHashrate} color="#6b7280" />
+              </div>
+            </div>
+          )}
+
+          {/* 文明地位 */}
+          <div className="border border-white/10 rounded-lg p-5">
+            <div className="text-xs font-mono text-white/30 mb-4">文明身份</div>
+            <div className="space-y-2">
+              <StatRow label="种族" value={`${raceName}族`} />
+              <StatRow label="累计贡献" value={totalHashrate > 0 ? `${totalHashrate.toLocaleString()} H` : '—'} highlight />
+              <StatRow label="邀请贡献" value={invite?.invite_count ? `引入 ${invite.invite_count} 位文明成员` : '尚未邀请'} />
             </div>
           </div>
         </div>
@@ -124,9 +120,24 @@ function StatRow({ label, value, highlight }: { label: string; value: string; hi
 
 function BigStat({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    <div className="bg-white/3 rounded-lg p-4 border border-white/5">
+    <div className="rounded-lg p-4 border border-white/5" style={{ backgroundColor: `${color}10` }}>
       <div className="text-xs font-mono text-white/30 mb-1">{label}</div>
-      <div className="text-lg font-mono font-bold" style={{ color }}>{value}</div>
+      <div className="text-base font-mono font-bold" style={{ color }}>{value}</div>
+    </div>
+  )
+}
+
+function BarStat({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+  const pct = max > 0 ? Math.round((value / max) * 100) : 0
+  return (
+    <div>
+      <div className="flex justify-between text-xs font-mono mb-1">
+        <span className="text-white/30">{label}</span>
+        <span className="text-white/50">{value.toLocaleString()} H ({pct}%)</span>
+      </div>
+      <div className="bg-white/5 rounded-full h-1.5 overflow-hidden">
+        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
+      </div>
     </div>
   )
 }

@@ -83,12 +83,12 @@ export async function inputHashrate(cookie: string, poolSeq: string, amount: num
 }
 
 export async function getUserHashrate(cookie: string) {
-  const res = await req('/hashratePool/get_user_hashrate/', {}, cookie)
-  return res.ret === 0 ? res.data : []
+  const res = await req('/user/get_user_hashrate/', {}, cookie)
+  return res.ret === 0 ? res.data : null
 }
 
 export async function getUserTotalToken(cookie: string) {
-  const res = await req('/hashratePool/get_user_total_token/', {}, cookie)
+  const res = await req('/user/get_user_total_token/', {}, cookie)
   return res.ret === 0 ? res.data : null
 }
 
