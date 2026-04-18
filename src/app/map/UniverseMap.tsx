@@ -201,51 +201,74 @@ export function UniverseMap({
 
       {/* Detail panel */}
       {(selectedMain || selectedBranch) && (
-        <div className="absolute bottom-3 left-3 right-3 rounded-lg border border-white/15 p-3"
-          style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}>
-          {selectedMain && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <span className="text-xs font-mono text-white/40 mr-2">Lv.{selectedMain.lv}</span>
-                  <span className="text-sm font-mono font-bold text-white">{selectedMain.name}</span>
+        <div className="absolute bottom-3 left-3 right-3 rounded-lg border border-white/15 overflow-hidden"
+          style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(8px)' }}>
+          {selectedMain && (() => {
+            const color = LV_COLORS[selectedMain.lv] ?? '#888'
+            const coverSrc = `/racewar/racewar_map_select_map_cover${selectedMain.lv}.jpg`
+            return (
+              <div className="flex gap-0">
+                {/* Cover image */}
+                <div className="relative shrink-0 w-24 overflow-hidden" style={{ minHeight: 80 }}>
+                  <img src={coverSrc} alt={selectedMain.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{ filter: selectedMain.is_unlock !== '1' ? 'grayscale(1) brightness(0.4)' : 'brightness(0.85)' }} />
+                  <div className="absolute inset-0" style={{ background: `linear-gradient(to right, transparent 60%, rgba(0,0,0,0.88) 100%)` }} />
+                  <div className="absolute bottom-1.5 left-1.5">
+                    <span className="text-xs font-mono font-bold px-1.5 py-0.5 rounded"
+                      style={{ color, backgroundColor: `${color}22`, border: `1px solid ${color}40` }}>
+                      Lv.{selectedMain.lv}
+                    </span>
+                  </div>
                 </div>
-                <span className={`text-xs font-mono px-2 py-0.5 rounded ${
-                  selectedMain.is_unlock === '1' ? 'text-green-400 bg-green-500/10' : 'text-white/20 bg-white/5'
-                }`}>
-                  {selectedMain.is_unlock === '1' ? '已解锁' : '未解锁'}
-                </span>
+                {/* Info */}
+                <div className="flex-1 p-3 min-w-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-mono font-bold text-white">{selectedMain.name}</span>
+                    <span className={`text-xs font-mono px-2 py-0.5 rounded ${
+                      selectedMain.is_unlock === '1' ? 'text-green-400 bg-green-500/10' : 'text-white/20 bg-white/5'
+                    }`}>
+                      {selectedMain.is_unlock === '1' ? '已解锁' : '未解锁'}
+                    </span>
+                  </div>
+                  {selectedMain.debriss.length > 0 ? (
+                    <div className="grid grid-cols-3 gap-x-3 gap-y-1.5">
+                      {selectedMain.debriss.map(d => (
+                        <div key={d.seq} className="text-xs font-mono">
+                          <div className="text-white/45 mb-0.5 truncate">{d.name}</div>
+                          <DebrisBar health={d.health} />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-xs font-mono text-white/20">暂无碎片数据</div>
+                  )}
+                </div>
               </div>
-              {selectedMain.debriss.length > 0 && (
-                <div className="grid grid-cols-3 gap-2">
-                  {selectedMain.debriss.map(d => (
+            )
+          })()}
+          {selectedBranch && (() => {
+            const isDead = selectedBranch.health <= 0
+            const color = isDead ? '#ef4444' : '#22d3ee'
+            return (
+              <div className="p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-mono font-bold text-white">{selectedBranch.name}</span>
+                  <span className="text-xs font-mono" style={{ color }}>
+                    {isDead ? '已陷落' : `HP ${selectedBranch.health}`}
+                  </span>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {selectedBranch.debriss.map(d => (
                     <div key={d.seq} className="text-xs font-mono">
                       <div className="text-white/50 mb-1 truncate">{d.name}</div>
                       <DebrisBar health={d.health} />
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
-          )}
-          {selectedBranch && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-mono font-bold text-white">{selectedBranch.name}</span>
-                <span className={`text-xs font-mono ${selectedBranch.health <= 0 ? 'text-red-400' : 'text-cyan-400'}`}>
-                  {selectedBranch.health <= 0 ? '已陷落' : `HP ${selectedBranch.health}`}
-                </span>
               </div>
-              <div className="grid grid-cols-4 gap-2">
-                {selectedBranch.debriss.map(d => (
-                  <div key={d.seq} className="text-xs font-mono">
-                    <div className="text-white/50 mb-1 truncate">{d.name}</div>
-                    <DebrisBar health={d.health} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+            )
+          })()}
         </div>
       )}
 
