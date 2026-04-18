@@ -12,11 +12,11 @@ export default async function MapPage() {
   ])
 
   const cookie = sysCookie ?? ''
-  const [situation, branchMaps, races] = await Promise.all([
+  const [situation, branchMaps, races] = await Promise.allSettled([
     getMapSituation(cookie),
     getBranchMaps(cookie),
     getRaces(),
-  ])
+  ]).then(r => r.map(s => s.status === 'fulfilled' ? s.value : null))
 
   // Build tasks: raceId → { lv } from race current map level
   const tasks: Record<string, { lv: string }> = {}
