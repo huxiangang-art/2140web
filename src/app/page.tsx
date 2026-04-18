@@ -2,21 +2,26 @@ import { HashratePool } from '@/components/HashratePool'
 import { RaceBar } from '@/components/RaceBar'
 import { RankTable } from '@/components/RankTable'
 import { AgentFeed } from '@/components/AgentFeed'
+import { getHashratePool, getRanks, login } from '@/lib/api2140'
 
 export const dynamic = 'force-dynamic'
 
-async function getCivilization() {
+async function getCivilizationData() {
   try {
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-    const res = await fetch(`${base}/api/civilization`, { cache: 'no-store' })
-    return res.json()
+    const cookie = await login(process.env.AGENT_MOBILE!, process.env.AGENT_PASSWD_MD5!)
+    if (!cookie) return null
+    const [pool, ranks] = await Promise.all([
+      getHashratePool(cookie),
+      getRanks(cookie),
+    ])
+    return { pool, ranks }
   } catch {
     return null
   }
 }
 
 export default async function Home() {
-  const data = await getCivilization()
+  const data = await getCivilizationData()
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-6xl mx-auto">
