@@ -103,12 +103,27 @@ export async function getSpeeches(cookie: string) {
 }
 
 export async function getBills(cookie: string) {
-  const res = await req('/parliament/get_bills/0/', {}, cookie)
+  const res = await req('/parliament/get_bills/0', {}, cookie)
   return res.ret === 0 ? res.data : []
 }
 
 export async function getParliamentUser(cookie: string) {
   const res = await req('/parliament/get_parliament_user/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+
+export async function getOfficials(cookie: string) {
+  const res = await req('/parliament/get_officials/', {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+
+export async function getOfficialInfo(cookie: string) {
+  const res = await req('/parliament/get_official/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+
+export async function getActiveValRank(cookie: string) {
+  const res = await req('/parliament/get_active_val_rank', {}, cookie)
   return res.ret === 0 ? res.data : null
 }
 
