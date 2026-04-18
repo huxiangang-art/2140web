@@ -13,7 +13,7 @@ export const RACE_COLORS: Record<string, string> = {
 async function req(path: string, opts: RequestInit = {}, cookie?: string) {
   const headers: Record<string, string> = {
     'Content-Type': 'application/x-www-form-urlencoded',
-    'User-Agent': 'Mozilla/5.0 (2140-web)',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; SM-G975U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Mobile Safari/537.36',
     ...(opts.headers as Record<string, string>),
   }
   if (cookie) headers['Cookie'] = `ci_session=${cookie}`
@@ -145,4 +145,9 @@ export async function getTimeNodes(cookie: string) {
 export async function getTheme8(cookie: string) {
   const res = await req('/write/get_theme8/2', {}, cookie)
   return res.ret === 0 ? res.data : []
+}
+
+export async function getDebrisRank(cookie: string, mapSeq = 1) {
+  const res = await req(`/racewar/get_debris_rank/${mapSeq}/`, {}, cookie)
+  return res.ret === 0 ? res.data : null
 }

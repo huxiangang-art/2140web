@@ -1,6 +1,6 @@
 import { Nav } from '@/components/Nav'
 import { getLoggedIn } from '@/lib/auth'
-import { getBranchMaps, getMapSituation, getCreationRank, getDigitalPersonRank, login, RACE_NAMES, RACE_COLORS } from '@/lib/api2140'
+import { getBranchMaps, getMapSituation, getCreationRank, getDigitalPersonRank, getDebrisRank, login, RACE_NAMES, RACE_COLORS } from '@/lib/api2140'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,11 +11,12 @@ export default async function RacewarPage() {
   ])
 
   const cookie = sysCookie ?? ''
-  const [branchMaps, situation, creationRank, digitalRank] = await Promise.all([
+  const [branchMaps, situation, creationRank, digitalRank, debrisRank1] = await Promise.all([
     getBranchMaps(cookie),
     getMapSituation(cookie),
     getCreationRank(cookie),
     getDigitalPersonRank(cookie),
+    getDebrisRank(cookie, 1),
   ])
 
   return (
@@ -116,6 +117,34 @@ export default async function RacewarPage() {
                       <span className="text-xs font-mono text-white/70 flex-1 truncate">{u.user_nick}</span>
                       <span className="text-xs font-mono text-white/30">
                         {Math.round(parseFloat(u.creation_index)).toLocaleString()}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* 今日贡献榜 */}
+          {debrisRank1?.user_daily?.length > 0 && (
+            <section>
+              <div className="text-xs font-mono text-white/30 mb-3">今日贡献榜</div>
+              <div className="space-y-2">
+                {debrisRank1.user_daily.slice(0, 8).map((u: any, i: number) => {
+                  const color = RACE_COLORS[u.race] ?? '#888'
+                  return (
+                    <div key={u.user_seq} className="flex items-center gap-2 py-1.5 border-b border-white/5 last:border-0">
+                      <span className="text-xs font-mono text-white/20 w-4">{i + 1}</span>
+                      <div className="w-5 h-5 rounded-full overflow-hidden shrink-0"
+                        style={{ backgroundColor: color + '20', border: `1px solid ${color}40` }}>
+                        {u.avatar && !u.avatar.includes('default')
+                          ? <img src={u.avatar} alt="" className="w-full h-full object-cover" />
+                          : <div className="w-full h-full flex items-center justify-center text-xs" style={{ color }}>{u.nickname?.[0]}</div>
+                        }
+                      </div>
+                      <span className="text-xs font-mono text-white/70 flex-1 truncate">{u.nickname}</span>
+                      <span className="text-xs font-mono text-amber-400/60">
+                        +{parseInt(u.amount_sum).toLocaleString()}
                       </span>
                     </div>
                   )
