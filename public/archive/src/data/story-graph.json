@@ -1,7 +1,7 @@
 {
   "project": "2140：自适应双向引导版",
   "version": "1.6.0",
-  "config": { "defaultVideoPath": "/videos/", "preloadOffset": 5 },
+  "config": { "defaultVideoPath": "https://2140-archive-1258761275.cos.ap-guangzhou.myqcloud.com/", "preloadOffset": 5 },
   "nodes": [
     {
       "id": "intro_start",
