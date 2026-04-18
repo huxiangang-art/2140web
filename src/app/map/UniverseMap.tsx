@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { DEBRIS_INFO } from './debrisData'
 
 const RACE_COLORS: Record<string, string> = {
   '1': '#3b82f6', '2': '#f97316', '3': '#a855f7',
@@ -78,7 +79,74 @@ function DebrisBar({ health }: { health: number }) {
   )
 }
 
+function DebrisModal({ debris, onClose }: { debris: Debris & { id?: string }; onClose: () => void }) {
+  const info = DEBRIS_INFO[debris.seq]
+  const hp = debris.health ?? 0
+  const isDead = hp <= 0
+  const hpColor = isDead ? '#ef4444' : hp < 200 ? '#f59e0b' : '#22c55e'
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }}
+      onClick={onClose}>
+      <div className="w-full max-w-md rounded-xl overflow-hidden border border-white/15 shadow-2xl max-h-[85vh] overflow-y-auto"
+        style={{ background: '#080810' }}
+        onClick={e => e.stopPropagation()}>
+
+        {/* Header image */}
+        <div className="relative h-36 overflow-hidden shrink-0">
+          {info?.bg ? (
+            <img src={info.bg} alt={debris.name}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ filter: isDead ? 'grayscale(1) brightness(0.4)' : 'brightness(0.7)' }} />
+          ) : (
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #0a0a1a, #1a1a2e)' }} />
+          )}
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(8,8,16,0.97) 100%)' }} />
+          <button type="button" onClick={onClose}
+            className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/50 flex items-center justify-center text-white/60 hover:text-white">
+            ✕
+          </button>
+          <div className="absolute bottom-3 left-4">
+            {(debris as any).id && (
+              <div className="text-xs font-mono text-white/30 mb-0.5">{(debris as any).id}</div>
+            )}
+            <div className="text-base font-bold font-mono text-white">{debris.name}</div>
+          </div>
+        </div>
+
+        <div className="p-4 space-y-3">
+          {/* HP */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono text-white/25">生命值</span>
+            <span className="text-xs font-mono font-bold" style={{ color: hpColor }}>
+              {isDead ? '已陷落' : hp}
+            </span>
+            {!isDead && (
+              <div className="flex-1 bg-white/10 rounded-full h-1 overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${Math.min(100, hp / 1000 * 100)}%`, backgroundColor: hpColor }} />
+              </div>
+            )}
+          </div>
+
+          {/* Description */}
+          {info?.desc && (
+            <div>
+              <div className="text-xs font-mono text-white/25 mb-1.5">地名介绍</div>
+              <p className="text-xs font-mono text-white/65 leading-relaxed">{info.desc}</p>
+            </div>
+          )}
+          {!info?.desc && (
+            <div className="text-center py-4 text-xs font-mono text-white/20">暂无介绍</div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function MainModal({ map, races, onClose }: { map: MainMap; races: string[]; onClose: () => void }) {
+  const [selectedDebris, setSelectedDebris] = useState<Debris | null>(null)
   const color = LV_COLORS[map.lv] ?? '#888'
   const bgSrc = `/racewar/map_bg/${map.lv}.jpg`
   const coverSrc = `/racewar/racewar_map_select_map_cover${map.lv}.jpg`
@@ -86,15 +154,16 @@ function MainModal({ map, races, onClose }: { map: MainMap; races: string[]; onC
   const locked = map.is_unlock !== '1'
 
   return (
+  <>
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}
       onClick={onClose}>
-      <div className="w-full max-w-lg rounded-xl overflow-hidden border border-white/15 shadow-2xl"
+      <div className="w-full max-w-lg rounded-xl overflow-hidden border border-white/15 shadow-2xl max-h-[90vh] overflow-y-auto"
         style={{ background: '#080810' }}
         onClick={e => e.stopPropagation()}>
 
         {/* Header image */}
-        <div className="relative h-40 overflow-hidden">
+        <div className="relative h-40 overflow-hidden shrink-0">
           <img src={bgSrc} alt={map.name}
             className="absolute inset-0 w-full h-full object-cover"
             onError={e => { (e.target as HTMLImageElement).src = coverSrc }}
@@ -164,7 +233,9 @@ function MainModal({ map, races, onClose }: { map: MainMap; races: string[]; onC
                   const hp = d.health ?? 0
                   const isDead = hp <= 0
                   return (
-                    <div key={d.seq} className="rounded-lg p-2.5 border border-white/8"
+                    <button type="button" key={d.seq}
+                      onClick={() => setSelectedDebris(d)}
+                      className="rounded-lg p-2.5 border border-white/8 text-left w-full transition-colors hover:border-white/20 hover:bg-white/5"
                       style={{ background: 'rgba(255,255,255,0.03)' }}>
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs font-mono text-white/70 truncate">{d.name}</span>
@@ -175,7 +246,7 @@ function MainModal({ map, races, onClose }: { map: MainMap; races: string[]; onC
                       </div>
                       {(d as any).id && <div className="text-xs font-mono text-white/20 mb-1">{(d as any).id}</div>}
                       <DebrisBar health={hp} />
-                    </div>
+                    </button>
                   )
                 })}
               </div>
@@ -188,8 +259,14 @@ function MainModal({ map, races, onClose }: { map: MainMap; races: string[]; onC
         </div>
       </div>
     </div>
+
+    {selectedDebris && (
+      <DebrisModal debris={selectedDebris} onClose={() => setSelectedDebris(null)} />
+    )}
+  </>
   )
 }
+
 
 function BranchModal({ map, onClose }: { map: BranchMap; onClose: () => void }) {
   const isDead = map.health <= 0
