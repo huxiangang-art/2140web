@@ -6,7 +6,6 @@ const links = [
   { href: '/citycode', label: '法典' },
   { href: '/races',    label: '种族' },
   { href: '/racewar',    label: '战争' },
-  { href: '/plaza',      label: '广场' },
   { href: '/parliament', label: '议事厅' },
   { href: '/world',      label: '世界观' },
   { href: '/chat',       label: 'GPT-X' },

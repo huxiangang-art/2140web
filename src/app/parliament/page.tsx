@@ -2,7 +2,7 @@ import { Nav } from '@/components/Nav'
 import { getLoggedIn, getUserCookie } from '@/lib/auth'
 import {
   getBills, getParliamentUser, getOfficials, getOfficialInfo, getActiveValRank,
-  login, RACE_NAMES, RACE_COLORS
+  getSpeeches, login, RACE_NAMES, RACE_COLORS
 } from '@/lib/api2140'
 
 export const dynamic = 'force-dynamic'
@@ -32,12 +32,13 @@ export default async function ParliamentPage() {
   ])
   const activeCookie = userCookie ?? sysCookie ?? ''
 
-  const [bills, parliamentUser, officials, officialInfo, activeValRank] = await Promise.all([
+  const [bills, parliamentUser, officials, officialInfo, activeValRank, speeches] = await Promise.all([
     getBills(activeCookie),
     userCookie ? getParliamentUser(userCookie) : Promise.resolve(null),
     getOfficials(activeCookie),
     getOfficialInfo(activeCookie),
     getActiveValRank(activeCookie),
+    getSpeeches(activeCookie),
   ])
 
   const officialFlat = (officials as any[][]).flat()
@@ -151,6 +152,45 @@ export default async function ParliamentPage() {
                 </div>
               )
             })
+          )}
+
+          {/* 广场演说 */}
+          {speeches.length > 0 && (
+            <div className="mt-6">
+              <div className="text-xs font-mono text-white/30 mb-3">广场演说</div>
+              <div className="space-y-3">
+                {speeches.map((s: any) => {
+                  const raceColor = s.race_seq && s.race_seq !== '0' ? (RACE_COLORS[s.race_seq] ?? '#888') : '#f97316'
+                  return (
+                    <div key={s.seq} className="border border-white/8 rounded-lg p-3 hover:border-white/15 transition-colors">
+                      <div className="flex items-start gap-2.5">
+                        <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 bg-white/5">
+                          {s.user_avatar
+                            ? <img src={s.user_avatar} alt="" className="w-full h-full object-cover" />
+                            : <div className="w-full h-full flex items-center justify-center text-xs font-mono text-white/30">{s.user_nick?.[0] ?? '?'}</div>
+                          }
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-mono text-white/85 font-medium leading-snug mb-1">{s.title}</div>
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <span className="text-xs font-mono" style={{ color: raceColor }}>{s.user_nick}</span>
+                            <span className="text-xs font-mono text-white/20">{s.active_time?.slice(0, 10) ?? s.time?.slice(0, 10)}</span>
+                          </div>
+                          <p className="text-xs text-white/35 leading-relaxed line-clamp-2 mb-2">
+                            {s.content?.replace(/<[^>]+>/g, '').trim().slice(0, 120)}
+                          </p>
+                          <div className="flex gap-3 text-xs font-mono text-white/20">
+                            <span>◎ {s.read_count ?? 0}</span>
+                            <span>◆ {s.top_num ?? 0}</span>
+                            <span>○ {s.comment_count ?? 0}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
           )}
         </div>
 
