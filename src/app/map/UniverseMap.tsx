@@ -84,9 +84,9 @@ function MainDetail({ map, races }: { map: MainMap; races: string[] }) {
               {map.is_unlock === '1' ? '已解锁' : '未解锁'}
             </span>
           </div>
-          {map.debriss.length > 0 ? (
+          {(map.debriss ?? []).length > 0 ? (
             <div className="grid grid-cols-3 gap-x-3 gap-y-1.5">
-              {map.debriss.map(d => (
+              {(map.debriss ?? []).map(d => (
                 <div key={d.seq} className="text-xs font-mono">
                   <div className="text-white/45 mb-0.5 truncate">{d.name}</div>
                   <DebrisBar health={d.health} />
@@ -135,7 +135,7 @@ function BranchDetail({ map }: { map: BranchMap }) {
         </span>
       </div>
       <div className="grid grid-cols-4 gap-2">
-        {map.debriss.map(d => (
+        {(map.debriss ?? []).map(d => (
           <div key={d.seq} className="text-xs font-mono">
             <div className="text-white/50 mb-1 truncate">{d.name}</div>
             <DebrisBar health={d.health} />
