@@ -4,7 +4,10 @@ import { useState, useRef, useEffect } from 'react'
 
 type Message = { role: 'user' | 'assistant'; content: string }
 
-const STARTERS = ['分析当前文明局势', '春蚕计划是什么', '我该投入算力吗', '预言下一轮走势']
+const STARTERS = [
+  '分析今日战况', '哪个种族会赢得这轮', '春蚕计划进展如何',
+  '数字人进化的意义', '议事厅在讨论什么', '预言下一个纪元',
+]
 
 export function ChatClient() {
   const [messages, setMessages] = useState<Message[]>([])
