@@ -15,8 +15,8 @@ export default async function ChatPage() {
 
           {/* 主视觉 */}
           <div className="relative">
-            <img src="/gptx/character_nobg.png" alt="GPT-X"
-              className="w-full object-contain"
+            <img src="/gptx/gpt-x.jpeg" alt="GPT-X"
+              className="w-full object-cover object-top"
               style={{ maxHeight: '480px' }} />
             {/* 底部渐变遮罩 */}
             <div className="absolute bottom-0 left-0 right-0 h-32"
@@ -52,7 +52,7 @@ export default async function ChatPage() {
 
         {/* 右：对话区 */}
         <div className="lg:col-span-3 flex flex-col" style={{ minHeight: '600px' }}>
-          <ChatClient avatarSrc="/gptx/character_nobg.png" />
+          <ChatClient avatarSrc="/gptx/gpt-x.jpeg" />
         </div>
 
       </div>
