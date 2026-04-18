@@ -6,6 +6,7 @@ const links = [
   { href: '/citycode', label: '法典' },
   { href: '/races',    label: '种族' },
   { href: '/chat',     label: 'GPT-X' },
+  { href: '/profile',  label: '档案' },
 ]
 
 export function Nav({ active, loggedIn }: { active: string; loggedIn?: boolean }) {
