@@ -371,3 +371,125 @@ export async function getDebrisRankDetail(cookie: string, seq: string) {
   const res = await req(`/racewar/get_debris_rank/${seq}`, {}, cookie)
   return res.ret === 0 ? res.data : null
 }
+
+// ── 写作系统 ────────────────────────────────────────────────
+export async function getWriteBranchs(cookie: string, nodeSeq = '1', sort = '1') {
+  const res = await req(`/write/get_branchs/${nodeSeq}/${sort}`, {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+export async function getWriteBranch(cookie: string, seq: string) {
+  const res = await req(`/write/get_branch/${seq}`, {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+export async function getWriteChapters(cookie: string, branchSeq: string, type = '1', sort = '1') {
+  const res = await req(`/write/get_chapters/${branchSeq}/${type}/${sort}`, {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+export async function getWriteChapter(cookie: string, branchSeq: string, chapterSeq: string) {
+  const res = await req(`/write/get_chapter/${branchSeq}/${chapterSeq}`, {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+export async function getRecentUpdates(cookie: string, page = 0) {
+  const res = await req(`/write/get_recent_updates/${page}/5/2`, {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+export async function getChapterComments(cookie: string, seq: string, type = '2', sort = '1', page = 0) {
+  const res = await req(`/write/get_comments_by_sort/${seq}/${type}/${sort}/${page}`, {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+export async function addWriteComment(cookie: string, belongSeq: string, type: string, comment: string) {
+  return req('/write/comment_add/', { method: 'POST', body: `belong_seq=${belongSeq}&type=${type}&comment=${encodeURIComponent(comment)}` }, cookie)
+}
+export async function getChapterSequels(cookie: string, branchSeq: string, chapterSeq: string) {
+  const res = await req(`/write/get_chapter_sequels/${branchSeq}/${chapterSeq}/1/0/10000`, {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+export async function getMyWriteChapters(cookie: string) {
+  const res = await req('/write/get_chapters/', {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+
+// ── 写作投资 ────────────────────────────────────────────────
+export async function getInvestmentIndex(cookie: string) {
+  const res = await req('/writeInvestment/get_investment_index_rank/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+export async function getInvestmentUser(cookie: string) {
+  const res = await req('/writeInvestment/get_investment_user/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+export async function getInvestmentRank(cookie: string) {
+  const res = await req('/writeInvestment/get_investment_rank/', {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+export async function getInvestmentInfo(cookie: string, chapterSeq: string) {
+  const res = await req(`/writeInvestment/get_investment_info/${chapterSeq}`, {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+export async function getChapterRoundReward(cookie: string, chapterSeq: string) {
+  const res = await req(`/writeInvestment/get_user_round_reward/${chapterSeq}`, {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+export async function getUserCoinRecords(cookie: string, page = 0) {
+  const res = await req(`/writeInvestment/get_user_coin_records/${page}`, {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+export async function investHashrate(cookie: string, chapterSeq: string, amount: number) {
+  return req(`/writeInvestment/user_hashrate_investment/${chapterSeq}`, { method: 'POST', body: `amount=${amount}` }, cookie)
+}
+export async function investToken(cookie: string, chapterSeq: string, amount: number) {
+  return req(`/writeInvestment/user_token_investment/${chapterSeq}`, { method: 'POST', body: `amount=${amount}` }, cookie)
+}
+
+// ── 道具详情/排行 ────────────────────────────────────────────
+export async function getPropDetail(cookie: string, seq: string) {
+  const res = await req(`/prop/get_prop/${seq}`, {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+export async function getPropUseRecords(cookie: string, page = 0) {
+  const res = await req(`/prop/get_prop_use_records/0/0/0/${page}/20`, {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+export async function getUserPropRewards(cookie: string) {
+  const res = await req('/prop/get_user_rewards/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+export async function getPropDrawInfo(cookie: string, debrisSeq: string) {
+  const res = await req(`/prop/get_prop_draw_info/${debrisSeq}`, {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+
+// ── 创世密钥 ────────────────────────────────────────────────
+export async function getGenesisKeys(cookie: string) {
+  const res = await req('/genesisKeys/get_genesis_keys2/', {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+
+// ── 用户空间 ────────────────────────────────────────────────
+export async function getUserSpace(cookie: string, userSeq: string) {
+  const res = await req(`/user/get_user_space2/${userSeq}`, {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+export async function getUserSpaceJournals(cookie: string, masterSeq: string, page = 0) {
+  const res = await req(`/user/get_user_space_journals/1/${masterSeq}/${page}`, {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+export async function addJournal(cookie: string, masterSeq: string, content: string) {
+  return req(`/user/user_space_journal_add/${masterSeq}`, { method: 'POST', body: `content=${encodeURIComponent(content)}` }, cookie)
+}
+
+// ── 广场发帖/详情 ────────────────────────────────────────────
+export async function getSpeech(cookie: string, seq: string) {
+  const res = await req(`/racePlaza/get_speech/${seq}`, {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+export async function getSpeechComments(cookie: string, seq: string, page = 0) {
+  const res = await req(`/racePlaza/get_comments/${seq}/${page}/20`, {}, cookie)
+  return res.ret === 0 ? res.data : []
+}
+export async function addSpeech(cookie: string, title: string, content: string) {
+  return req('/racePlaza/speech_add/', { method: 'POST', body: `title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}` }, cookie)
+}
+export async function addSpeechComment(cookie: string, speechSeq: string, comment: string) {
+  return req(`/racePlaza/comment_add/${speechSeq}`, { method: 'POST', body: `comment=${encodeURIComponent(comment)}&type=1` }, cookie)
+}
