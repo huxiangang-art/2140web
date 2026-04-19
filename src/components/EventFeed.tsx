@@ -13,12 +13,16 @@ const EVENT_COLORS: Record<string, string> = {
 }
 
 async function getEvents() {
-  const { data } = await getSupabaseAdmin()
-    .from('civilization_events')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(8)
-  return data ?? []
+  try {
+    const { data } = await getSupabaseAdmin()
+      .from('civilization_events')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(8)
+    return data ?? []
+  } catch {
+    return []
+  }
 }
 
 export async function EventFeed() {
