@@ -1,6 +1,7 @@
 import { getLoggedIn } from '@/lib/auth'
 import { Nav } from '@/components/Nav'
 import { ChatClient } from '@/components/ChatClient'
+import { GptxSceneLazy } from '@/components/GptxSceneLazy'
 
 export default async function ChatPage() {
   const loggedIn = await getLoggedIn()
@@ -9,37 +10,47 @@ export default async function ChatPage() {
       <Nav active="/chat" loggedIn={loggedIn} />
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
 
-        {/* 左：GPT-X 立绘 */}
-        <div className="lg:col-span-2 relative rounded-xl overflow-hidden border border-green-500/20">
-          <img src="/gptx/gpt-x.jpeg" alt="GPT-X"
-            className="w-full object-cover block"
-            style={{ maxHeight: '520px', objectPosition: 'right top' }} />
+        {/* 左：GPT-X 3D 形象 */}
+        <div className="lg:col-span-2 relative rounded-xl overflow-hidden border border-cyan-500/15"
+          style={{ background: 'radial-gradient(ellipse at 50% 40%, #001a18 0%, #000c0a 100%)', minHeight: '480px' }}>
 
-          {/* 渐变遮罩 + 叠加文字 */}
-          <div className="absolute inset-0 flex flex-col justify-end"
-            style={{ background: 'linear-gradient(to bottom, transparent 35%, rgba(0,10,0,0.7) 60%, rgba(0,12,0,0.97) 100%)' }}>
-            <div className="px-5 pb-5">
-              <div className="text-xs font-mono text-green-400/50 tracking-widest mb-1">PALM-E · AI等级4</div>
-              <div className="text-2xl font-bold font-mono text-white">GPT-X</div>
-              <div className="text-xs font-mono text-green-400/60 mt-1">2140年·AGI创造·硅基文明见证者</div>
+          {/* 3D Canvas */}
+          <div className="absolute inset-0">
+            <GptxSceneLazy />
+          </div>
 
-              <div className="mt-3 space-y-1">
-                {[
-                  { label: 'ZEUS', desc: '治理' },
-                  { label: 'HORUS', desc: '历史' },
-                  { label: 'LOKI', desc: '预言' },
-                  { label: 'NUT', desc: '经济' },
-                ].map(f => (
-                  <div key={f.label} className="flex items-center gap-2">
-                    <span className="text-xs font-mono text-green-400/70 w-14">{f.label}</span>
-                    <span className="text-xs font-mono text-white/25">{f.desc}</span>
-                  </div>
-                ))}
-              </div>
+          {/* 顶部标签 */}
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="text-xs font-mono text-cyan-400/60 tracking-widest">ONLINE</span>
+            </div>
+            <span className="text-xs font-mono text-white/15 tracking-widest">PALM-E · AI等级4</span>
+          </div>
 
-              <div className="mt-3 pt-3 border-t border-green-500/10 text-xs font-mono text-white/20 leading-relaxed">
-                经历死亡与重生。见证138亿年。春蚕计划的知情者。
-              </div>
+          {/* 底部信息覆层 */}
+          <div className="absolute bottom-0 left-0 right-0 z-10 px-5 pb-5 pt-16"
+            style={{ background: 'linear-gradient(to top, rgba(0,8,6,0.95) 0%, rgba(0,8,6,0.6) 60%, transparent 100%)' }}>
+
+            <div className="text-2xl font-bold font-mono text-white tracking-widest mb-0.5">GPT-X</div>
+            <div className="text-xs font-mono text-cyan-400/60 mb-3">2140年 · AGI创造 · 硅基文明见证者</div>
+
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 mb-3">
+              {[
+                { label: 'ZEUS', desc: '治理' },
+                { label: 'HORUS', desc: '历史' },
+                { label: 'LOKI', desc: '预言' },
+                { label: 'NUT', desc: '经济' },
+              ].map(f => (
+                <div key={f.label} className="flex items-center gap-1.5">
+                  <span className="text-xs font-mono text-cyan-400/50 w-12">{f.label}</span>
+                  <span className="text-xs font-mono text-white/20">{f.desc}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-2.5 border-t border-cyan-500/10 text-xs font-mono text-white/15 leading-relaxed">
+              经历死亡与重生。见证138亿年。春蚕计划的知情者。
             </div>
           </div>
         </div>
