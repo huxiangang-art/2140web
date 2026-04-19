@@ -56,9 +56,22 @@ export async function getRaces() {
   return res.ret === 0 ? res.data : []
 }
 
-export async function getProposals(cookie: string) {
-  const res = await req('/cityCode/get_proposals/', {}, cookie)
+export async function getProposals(cookie: string, type = 3, category = 0, page = 0) {
+  const path = type === 3 && category === 0
+    ? '/cityCode/get_proposals/'
+    : `/cityCode/get_proposals/${type}/${category}/${page}//`
+  const res = await req(path, {}, cookie)
   return res.ret === 0 ? res.data : []
+}
+
+export async function getAllCityCodeBills(cookie: string) {
+  const results = await Promise.allSettled(
+    Array.from({ length: 20 }, (_, i) =>
+      req(`/cityCode/get_proposals/3/${i + 1}/0//`, {}, cookie)
+        .then(res => (res.ret === 0 ? (res.data ?? []).map((b: any) => ({ ...b, category: i + 1 })) : []))
+    )
+  )
+  return results.flatMap(r => r.status === 'fulfilled' ? r.value : [])
 }
 
 export async function addChapter(cookie: string, content: string, sequelId = 1, branchId = 1) {
