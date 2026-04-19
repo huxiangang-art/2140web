@@ -11,9 +11,7 @@ type Bill = {
   support_num: string
   against_num: string
   time: string
-  deadline: string
   author_nickname: string
-  author_avatar: string
   amendment_count: string
   category: number
 }
@@ -26,9 +24,14 @@ type Category = {
 
 function BillCard({ bill }: { bill: Bill }) {
   const [expanded, setExpanded] = useState(false)
+  const content = bill.content ?? ''
+  const hasImg = !!bill.introduce_img
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/3 overflow-hidden">
+    <div
+      className="rounded-xl border border-white/10 bg-white/3 overflow-hidden cursor-pointer"
+      onClick={() => setExpanded(v => !v)}
+    >
       <div className="p-4">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
@@ -42,37 +45,45 @@ function BillCard({ bill }: { bill: Bill }) {
             </div>
             <h3 className="text-sm font-bold font-mono text-white leading-snug">{bill.title}</h3>
           </div>
-          <div className="shrink-0 text-right">
+          <div className="shrink-0 flex flex-col items-end gap-1">
             <div className="text-xs text-white/25 font-mono">{bill.time.slice(0, 10)}</div>
-            <div className="text-xs text-white/40 font-mono mt-0.5">{bill.author_nickname}</div>
+            <div className="text-xs text-white/40 font-mono">{bill.author_nickname}</div>
+            <span className="text-xs font-mono text-white/30">
+              {expanded ? '收起 ↑' : '展开 ↓'}
+            </span>
           </div>
         </div>
 
-        <p className="text-xs font-mono text-white/55 leading-relaxed whitespace-pre-wrap">
-          {expanded ? bill.content : bill.content.slice(0, 120) + (bill.content.length > 120 ? '…' : '')}
-        </p>
+        {content && (
+          <p
+            className="text-xs font-mono text-white/55 leading-relaxed whitespace-pre-wrap"
+            style={expanded ? undefined : {
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {content}
+          </p>
+        )}
 
-        {bill.introduce_img && expanded && (
+        {hasImg && expanded && (
           <div className="mt-3 rounded-lg overflow-hidden border border-white/8">
-            <img src={`https://www.2140city.cn${bill.introduce_img}`} alt="" className="w-full object-cover" />
+            <img
+              src={bill.introduce_img.startsWith('http') ? bill.introduce_img : `https://www.2140city.cn${bill.introduce_img}`}
+              alt=""
+              className="w-full object-cover"
+            />
           </div>
         )}
 
-        <div className="flex items-center justify-between mt-3">
-          <div className="flex items-center gap-3 text-xs font-mono text-white/30">
+        {expanded && (
+          <div className="flex items-center gap-3 text-xs font-mono text-white/25 mt-3">
             <span>支持 {bill.support_num}</span>
             <span>反对 {bill.against_num}</span>
           </div>
-          {bill.content.length > 120 && (
-            <button
-              type="button"
-              onClick={() => setExpanded(v => !v)}
-              className="text-xs font-mono text-white/30 hover:text-white/60 transition-colors"
-            >
-              {expanded ? '收起 ↑' : '展开 ↓'}
-            </button>
-          )}
-        </div>
+        )}
       </div>
     </div>
   )
