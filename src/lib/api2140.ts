@@ -180,6 +180,11 @@ export async function getTotalRank(cookie: string, mapSeq = 1) {
   return res.ret === 0 ? res.data : null
 }
 
+export async function getMapRank(cookie: string, mapSeq: string) {
+  const res = await req(`/racewar/get_map_rank/${mapSeq}`, {}, cookie)
+  return res.ret === 0 ? res.data : null
+}
+
 export async function getGenesisKeysUsers(cookie: string) {
   const res = await req('/genesisKeys/get_genesis_keys_users/', {}, cookie)
   return res.ret === 0 ? res.data : null

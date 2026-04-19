@@ -4,6 +4,7 @@ import {
   getBranchMaps, getMapSituation, getCreationRank, getDebrisRank,
   getTotalRank, getGenesisKeysUsers, login, RACE_NAMES, RACE_COLORS,
 } from '@/lib/api2140'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -77,16 +78,19 @@ export default async function RacewarPage() {
                 {situation.maps.filter((m: any) => m.is_unlock !== '-1').map((m: any) => (
                   <div key={m.seq} className="border border-white/8 rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-mono text-white/80">{m.name}</span>
-                      <span className="text-xs font-mono text-white/25">Lv.{m.lv}</span>
+                      <Link href={`/racewar/map/${m.seq}`} className="text-xs font-mono text-white/80 hover:text-white transition-colors">{m.name}</Link>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono text-white/25">Lv.{m.lv}</span>
+                        <Link href={`/racewar/map/${m.seq}`} className="text-xs font-mono text-white/20 hover:text-white/50 px-1.5 py-0.5 border border-white/10 rounded">地票榜</Link>
+                      </div>
                     </div>
                     {m.debriss?.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {m.debriss.map((d: any) => (
-                          <span key={d.seq}
-                            className={`text-xs font-mono px-2 py-0.5 rounded border ${d.error_status === '1' ? 'border-red-500/30 text-red-400/60' : 'border-white/10 text-white/30'}`}>
+                          <Link key={d.seq} href={`/racewar/debris/${d.seq}`}
+                            className={`text-xs font-mono px-2 py-0.5 rounded border transition-colors ${d.error_status === '1' ? 'border-red-500/30 text-red-400/60 hover:border-red-500/50' : 'border-white/10 text-white/30 hover:border-white/30 hover:text-white/60'}`}>
                             {d.name}
-                          </span>
+                          </Link>
                         ))}
                       </div>
                     )}

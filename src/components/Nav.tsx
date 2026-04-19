@@ -26,6 +26,7 @@ const links = [
   { href: '/digital',    label: '数字人' },
   { href: '/tasks',      label: '任务' },
   { href: '/bulletins',  label: '公告' },
+  { href: '/pay',        label: '充值' },
   { href: '/turing',     label: '图灵测试' },
   { href: '/gene',       label: '基因测序' },
   { href: '/chat',       label: 'GPT-X' },
