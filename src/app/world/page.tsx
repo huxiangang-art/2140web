@@ -1,11 +1,12 @@
 import { Nav } from '@/components/Nav'
 import { getLoggedIn } from '@/lib/auth'
-import { login, getTimeNodes, getTheme8, RACE_COLORS } from '@/lib/api2140'
+import { login, getTimeNodes, getTheme8 } from '@/lib/api2140'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
-function stripHtml(html: string) {
-  return html.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim()
+function stripHtml(html?: string) {
+  return String(html ?? '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim()
 }
 
 export default async function WorldPage() {
@@ -39,15 +40,9 @@ export default async function WorldPage() {
             <div className="space-y-0">
               {timeNodes.map((node: any, i: number) => {
                 const isKeyNode = node.status === '1' || i % 8 === 0
-                return (
-                  <div key={node.seq} className="relative pl-8 pb-5 group">
-                    <div className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border flex items-center justify-center
-                      ${isKeyNode
-                        ? 'border-cyan-500/60 bg-cyan-500/10'
-                        : 'border-white/15 bg-white/5'
-                      }`}>
-                      <div className={`w-1.5 h-1.5 rounded-full ${isKeyNode ? 'bg-cyan-400/70' : 'bg-white/20'}`} />
-                    </div>
+                const canOpenBranch = Number(node.branch_seq) > 0
+                const nodeBody = (
+                  <>
                     <div className="text-xs font-mono text-white/20 mb-0.5">{node.node_time}</div>
                     <div className={`text-sm font-mono font-semibold mb-1 ${isKeyNode ? 'text-cyan-300/80' : 'text-white/70'}`}>
                       {node.node_title}
@@ -56,6 +51,24 @@ export default async function WorldPage() {
                       <div className="text-xs text-white/35 leading-relaxed line-clamp-2">
                         {node.node_txt}
                       </div>
+                    )}
+                  </>
+                )
+                return (
+                  <div key={node.seq} className="relative pl-8 pb-5 group">
+                    <div className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border flex items-center justify-center
+                      ${isKeyNode
+                        ? 'border-cyan-500/60 bg-cyan-500/10'
+                        : 'border-white/15 bg-white/5'
+                    }`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${isKeyNode ? 'bg-cyan-400/70' : 'bg-white/20'}`} />
+                    </div>
+                    {canOpenBranch ? (
+                      <Link href={`/write/branch/${node.branch_seq}`} className="block rounded border border-transparent transition-colors hover:border-white/10 hover:bg-white/[0.025] -m-2 p-2">
+                        {nodeBody}
+                      </Link>
+                    ) : (
+                      nodeBody
                     )}
                   </div>
                 )
@@ -73,19 +86,28 @@ export default async function WorldPage() {
               const color = colors[i % colors.length]
               const desc = stripHtml(s.desc ?? '')
               return (
-                <div key={s.seq}
-                  className="rounded-lg border border-white/8 p-4"
+                <Link key={s.seq}
+                  href={`/write/branch/${s.seq}`}
+                  className="grid grid-cols-[72px_1fr] gap-3 rounded-lg border border-white/8 p-3 transition-colors hover:border-white/18"
                   style={{ borderLeftColor: color + '60', borderLeftWidth: '2px' }}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-mono" style={{ color: color + 'aa' }}>
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span className="text-sm font-mono font-bold text-white/85">{s.title}</span>
+                  <div className="h-24 overflow-hidden rounded border border-white/8 bg-black/30">
+                    {s.cover
+                      ? <img src={s.cover} alt="" className="h-full w-full object-cover" />
+                      : <div className="flex h-full w-full items-center justify-center text-xs font-mono" style={{ color: color + 'aa' }}>{String(i + 1).padStart(2, '0')}</div>
+                    }
                   </div>
-                  <p className="text-xs text-white/35 leading-relaxed line-clamp-4 whitespace-pre-line">
-                    {desc}
-                  </p>
-                </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs font-mono" style={{ color: color + 'aa' }}>
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <span className="truncate text-sm font-mono font-bold text-white/85">{s.title}</span>
+                    </div>
+                    <p className="text-xs text-white/35 leading-relaxed line-clamp-4 whitespace-pre-line">
+                      {desc}
+                    </p>
+                  </div>
+                </Link>
               )
             })}
           </div>

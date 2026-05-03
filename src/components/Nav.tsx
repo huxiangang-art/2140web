@@ -12,6 +12,12 @@ const groups = [
   {
     label: '文明',
     links: [
+      { href: '/metaverse', label: '元宇宙' },
+      { href: '/metaverse/dashboard', label: '控制台' },
+      { href: '/metaverse/worlds', label: '世界' },
+      { href: '/metaverse/archive', label: '档案' },
+      { href: '/metaverse/audit', label: '审计' },
+      { href: '/metaverse/library', label: '文库' },
       { href: '/history', label: '文明史' },
       { href: '/world', label: '世界观' },
       { href: '/map', label: '宇宙地图' },
@@ -23,7 +29,13 @@ const groups = [
     links: [
       { href: '/races', label: '种族' },
       { href: '/racewar', label: '战争' },
+      { href: '/metaverse/war', label: '战争中心' },
+      { href: '/metaverse/war/quests', label: '战任务' },
+      { href: '/metaverse/war/ranks', label: '战排行' },
+      { href: '/metaverse/war/reports', label: '战报' },
+      { href: '/metaverse/agent/war', label: '作战Agent' },
       { href: '/racewar/tasks', label: '战争任务' },
+      { href: '/metaverse/quests', label: '任务中心' },
       { href: '/genesis', label: '创世密钥' },
     ],
   },
@@ -57,12 +69,16 @@ const groups = [
       { href: '/plaza', label: '广场' },
       { href: '/parliament', label: '议事厅' },
       { href: '/citycode', label: '法典' },
+      { href: '/metaverse/contribution', label: '贡献' },
+      { href: '/metaverse/agent', label: 'Agent' },
+      { href: '/metaverse/agent/branch', label: '支线Agent' },
     ],
   },
   {
     label: '个人',
     links: [
       { href: '/profile', label: '档案' },
+      { href: '/metaverse/identity', label: '元身份' },
       { href: '/digital', label: '数字人' },
       { href: '/chat', label: 'GPT-X' },
     ],

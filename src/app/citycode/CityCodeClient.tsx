@@ -1,20 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import type { CityCodeProposal } from '@/lib/api2140'
 
-type Bill = {
-  seq: string
-  id: string
-  title: string
-  content: string
-  introduce_img: string
-  support_num: string
-  against_num: string
-  time: string
-  author_nickname: string
-  amendment_count: string
-  category: number
-}
+type Bill = CityCodeProposal & { category: number }
 
 type Category = {
   id: number
@@ -47,7 +37,7 @@ function BillCard({ bill }: { bill: Bill }) {
           </div>
           <div className="shrink-0 flex flex-col items-end gap-1">
             <div className="text-xs text-white/25 font-mono">{bill.time.slice(0, 10)}</div>
-            <div className="text-xs text-white/40 font-mono">{bill.author_nickname}</div>
+            <div className="text-xs text-white/40 font-mono">{bill.author_nickname ?? bill.user_nickname}</div>
             <span className="text-xs font-mono text-white/30">
               {expanded ? '收起 ↑' : '展开 ↓'}
             </span>
@@ -82,6 +72,13 @@ function BillCard({ bill }: { bill: Bill }) {
           <div className="flex items-center gap-3 text-xs font-mono text-white/25 mt-3">
             <span>支持 {bill.support_num}</span>
             <span>反对 {bill.against_num}</span>
+            <Link
+              href={`/citycode/${bill.seq}`}
+              onClick={event => event.stopPropagation()}
+              className="ml-auto text-cyan-400/70 hover:text-cyan-400 transition-colors"
+            >
+              详情 →
+            </Link>
           </div>
         )}
       </div>

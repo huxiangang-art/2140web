@@ -1,6 +1,7 @@
 import { Nav } from '@/components/Nav'
 import { getLoggedIn } from '@/lib/auth'
 import { getWriteBranch, getWriteChapters, login } from '@/lib/api2140'
+import type { WriteBranch, WriteChapter } from '@/lib/api2140'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -12,12 +13,13 @@ export default async function BranchPage({ params }: { params: Promise<{ seq: st
     login(process.env.AGENT_MOBILE!, process.env.AGENT_PASSWD_MD5!),
   ])
 
-  const [branch, chapters] = await Promise.allSettled([
+  const [branchResult, chaptersResult] = await Promise.allSettled([
     getWriteBranch(cookie ?? '', seq),
     getWriteChapters(cookie ?? '', seq, '1', '1'),
-  ]).then(r => r.map(s => s.status === 'fulfilled' ? s.value : null))
-
-  const chapterList: any[] = Array.isArray(chapters) ? chapters : []
+  ])
+  const branch: WriteBranch | null = branchResult.status === 'fulfilled' ? branchResult.value : null
+  const chapters = chaptersResult.status === 'fulfilled' ? chaptersResult.value : null
+  const chapterList: WriteChapter[] = Array.isArray(chapters) ? chapters : []
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">

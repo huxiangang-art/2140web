@@ -1,92 +1,64 @@
-import { Nav } from '@/components/Nav'
-import { getLoggedIn, getUserCookie } from '@/lib/auth'
-import { getDigitalPerson, getDigitalPersonRewards, getDigitalPersonRank, login } from '@/lib/api2140'
-import { redirect } from 'next/navigation'
-import { DigitalPersonClient } from './DigitalPersonClient'
+import { ApkList, ApkListItem, ApkReplicaPage, ApkSection } from '@/components/ApkReplicaPage'
+import { getDigitalPerson, getDigitalPersonRank, getDigitalPersonRewards, login } from '@/lib/api2140'
 
 export const dynamic = 'force-dynamic'
 
-const LV_NAMES = ['','碳基体','猿人','直立人','智人','原始人','自然人','农业人','封建人','工业人','社会人','契约人','加密客','基因体','半数人','算力体','硅基体','比特人','低熵体','全数人','元人','数字人']
-
-async function getData(userCookie: string) {
-  const sysCookie = await login(process.env.AGENT_MOBILE!, process.env.AGENT_PASSWD_MD5!)
-  const [person, rewards, rank] = await Promise.allSettled([
-    getDigitalPerson(userCookie),
-    getDigitalPersonRewards(userCookie),
-    getDigitalPersonRank(sysCookie ?? userCookie),
-  ]).then(r => r.map(s => s.status === 'fulfilled' ? s.value : null))
-  return { person, rewards, rank }
-}
+const lvNames = ['', '碳基体', '猿人', '直立人', '智人', '原始人', '自然人', '农业人', '封建人', '工业人', '社会人', '契约人', '加密客', '基因体', '半数人', '算力体', '硅基体', '比特人', '低熵体', '全数人', '元人', '数字人']
 
 export default async function DigitalPage() {
-  const [loggedIn, userCookie] = await Promise.all([getLoggedIn(), getUserCookie()])
-  if (!loggedIn) redirect('/login')
-
-  const { person, rewards, rank } = await getData(userCookie!)
-
-  const lv    = parseInt(person?.person_lv ?? '1') || 1
-  const lvName = LV_NAMES[lv] ?? '数字人'
-  const myStandards = {
-    s1: parseInt(person?.standard1 ?? '0'),
-    s2: parseInt(person?.standard2 ?? '0'),
-    s3: parseInt(person?.standard3 ?? '0'),
-    s4: parseInt(person?.standard4 ?? '0'),
-    sum: parseInt(person?.standard_sum ?? '0'),
-  }
-
-  // rewards.rewards is a 2D array[21][n], rewards.standards is array[21]
-  const rewardMatrix: any[][] = Array.isArray(rewards?.rewards)
-    ? rewards.rewards
-    : Array(21).fill([])
-  const standards: number[] = Array.isArray(rewards?.standards)
-    ? rewards.standards.map((v: any) => parseInt(v) || 0)
-    : Array(21).fill(0)
-
-  const rankList: any[] = Array.isArray(rank) ? rank : (rank as any)?.records ?? []
+  const cookie = await login(process.env.AGENT_MOBILE!, process.env.AGENT_PASSWD_MD5!)
+  const [personRes, rewardsRes, rankRes] = await Promise.allSettled([
+    cookie ? getDigitalPerson(cookie) : Promise.resolve(null),
+    cookie ? getDigitalPersonRewards(cookie) : Promise.resolve(null),
+    cookie ? getDigitalPersonRank(cookie) : Promise.resolve([]),
+  ])
+  const person: any = personRes.status === 'fulfilled' ? personRes.value : null
+  const rewards: any = rewardsRes.status === 'fulfilled' ? rewardsRes.value : null
+  const rankRaw: any = rankRes.status === 'fulfilled' ? rankRes.value : []
+  const rank: any[] = Array.isArray(rankRaw) ? rankRaw : rankRaw?.records ?? []
+  const lv = Math.max(1, Math.min(21, Number(person?.person_lv ?? 1)))
+  const standard = Number(person?.standard_sum ?? 0)
 
   return (
-    <main className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
-      <Nav active="/digital" loggedIn={loggedIn} />
-
-      {/* Hero */}
-      <div className="mb-6 flex items-start gap-5">
-        <div className="w-20 h-20 rounded-xl overflow-hidden border border-cyan-500/20 bg-black/30 shrink-0">
-          {lv > 0 && lv <= 21
-            ? <img src={`/digital/person_equip${lv}.png`} alt={lvName} className="w-full h-full object-cover" />
-            : <div className="w-full h-full flex items-center justify-center text-2xl font-bold font-mono text-white/30">{lv}</div>
-          }
+    <ApkReplicaPage
+      title="数字人"
+      subtitle="数字人进化 · 创世钥匙 · 等级奖励"
+      hero="/apk/digital_person/digital_person_top_bg.jpg"
+      heroClass="digital-hero"
+      stats={[
+        { label: '当前世代', value: `第${lv}代` },
+        { label: '形态', value: lvNames[lv] },
+        { label: '数字化', value: `${standard}%` },
+      ]}
+      actions={[
+        { href: '/digital', label: '购买进化', desc: '原 APK 数字人购买入口', meta: '待接写接口' },
+        { href: '/digital', label: '奖励规则', desc: '查看各世代奖励标准' },
+        { href: '/digital', label: '排行榜', desc: '数字人进化排行' },
+        { href: '/profile', label: '我的基地', desc: '返回个人中心' },
+      ]}
+    >
+      <ApkSection title="当前形态">
+        <div className="apk-page-media-card">
+          <img src={`/apk/digital_person/person_equip${lv}.png`} alt={lvNames[lv]} />
         </div>
-        <div>
-          <div className="text-xs font-mono text-white/25 mb-0.5">数字人 · 进化系统</div>
-          <div className="flex items-baseline gap-2 mb-1">
-            <span className="text-2xl font-bold font-mono text-white">第 {lv} 代</span>
-            <span className="text-sm font-mono text-cyan-400">{lvName}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="text-xs font-mono text-white/30">综合数字化</div>
-            <div className="flex items-center gap-2">
-              <div className="h-1.5 w-32 bg-white/8 rounded-full overflow-hidden">
-                <div className="h-full rounded-full bg-cyan-400 transition-all"
-                  style={{ width: `${Math.min(100, myStandards.sum)}%`, boxShadow: '0 0 6px #00ffe060' }} />
-              </div>
-              <span className="text-sm font-bold font-mono text-cyan-400">{myStandards.sum}%</span>
-            </div>
-          </div>
-          {lv < 21 && standards[lv] > 0 && (
-            <div className="text-xs font-mono text-white/20 mt-1">
-              下一代（{LV_NAMES[lv + 1]}）需达到 <span className="text-amber-400/60">{standards[lv]}%</span>
-            </div>
-          )}
-        </div>
-      </div>
+      </ApkSection>
 
-      <DigitalPersonClient
-        myLv={lv}
-        myStandards={myStandards}
-        standards={standards}
-        rewards={rewardMatrix}
-        rank={rankList}
-      />
-    </main>
+      <ApkSection title="奖励标准">
+        <ApkList>
+          {(rewards?.standards ?? []).slice(0, 8).map((item: any, index: number) => (
+            <ApkListItem key={index} title={`第 ${index + 1} 代 · ${lvNames[index + 1] ?? '数字人'}`} desc="进化达标奖励" meta={`${item}%`} />
+          ))}
+          {!(rewards?.standards ?? []).length && <ApkListItem title="暂无奖励标准" desc="保留 APK 数字人奖励结构。" />}
+        </ApkList>
+      </ApkSection>
+
+      <ApkSection title="数字人排行">
+        <ApkList>
+          {rank.slice(0, 8).map((item: any, index) => (
+            <ApkListItem key={item.user_seq ?? index} title={`${index + 1}. ${item.user_nickname ?? item.nickname ?? '居民'}`} desc={item.person_lv ? `第 ${item.person_lv} 代` : '数字人'} meta={`${item.standard_sum ?? item.score ?? 0}%`} />
+          ))}
+        </ApkList>
+      </ApkSection>
+    </ApkReplicaPage>
   )
 }

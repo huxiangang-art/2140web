@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { hasSupabaseConfig, supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: Request) {
+  if (!hasSupabaseConfig()) {
+    return NextResponse.json([])
+  }
+
   const { searchParams } = new URL(req.url)
   const agent = searchParams.get('agent')
   const limit = parseInt(searchParams.get('limit') ?? '20')

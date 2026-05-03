@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { getSupabaseAdmin } from '@/lib/supabase'
+import { getSupabaseAdmin, hasSupabaseConfig } from '@/lib/supabase'
 
 export async function POST(req: NextRequest) {
+  if (!hasSupabaseConfig()) {
+    return NextResponse.json({ error: 'Supabase is not configured' }, { status: 503 })
+  }
+
   const store = await cookies()
   const cookie = store.get('ci_session')?.value
   if (!cookie) return NextResponse.json({ error: '未登录' }, { status: 401 })

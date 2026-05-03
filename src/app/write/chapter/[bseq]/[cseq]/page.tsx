@@ -1,6 +1,7 @@
 import { Nav } from '@/components/Nav'
 import { getLoggedIn } from '@/lib/auth'
 import { getWriteChapter, getChapterComments, getInvestmentInfo, login } from '@/lib/api2140'
+import type { WriteChapter, WriteComment } from '@/lib/api2140'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -12,13 +13,15 @@ export default async function ChapterPage({ params }: { params: Promise<{ bseq: 
     login(process.env.AGENT_MOBILE!, process.env.AGENT_PASSWD_MD5!),
   ])
 
-  const [chapter, comments, invest] = await Promise.allSettled([
+  const [chapterResult, commentsResult, investResult] = await Promise.allSettled([
     getWriteChapter(cookie ?? '', bseq, cseq),
     getChapterComments(cookie ?? '', cseq, '2', '1', 0),
     getInvestmentInfo(cookie ?? '', cseq),
-  ]).then(r => r.map(s => s.status === 'fulfilled' ? s.value : null))
-
-  const commentList: any[] = Array.isArray(comments) ? comments : []
+  ])
+  const chapter: WriteChapter | null = chapterResult.status === 'fulfilled' ? chapterResult.value : null
+  const comments = commentsResult.status === 'fulfilled' ? commentsResult.value : null
+  const invest = investResult.status === 'fulfilled' ? investResult.value : null
+  const commentList: WriteComment[] = Array.isArray(comments) ? comments : []
 
   return (
     <main className="min-h-screen p-4 md:p-8 max-w-3xl mx-auto">

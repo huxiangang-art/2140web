@@ -1,106 +1,62 @@
-import { Nav } from '@/components/Nav'
-import { WriteClient } from '@/components/WriteClient'
-import { redirect } from 'next/navigation'
-import { getLoggedIn, getUserCookie } from '@/lib/auth'
-import { getUserInfo, getHashratePool, login, getWriteBranchs, getRecentUpdates } from '@/lib/api2140'
-import Link from 'next/link'
+import { ApkList, ApkListItem, ApkReplicaPage, ApkSection } from '@/components/ApkReplicaPage'
+import { getRecentUpdates, getTimeNodes, getWriteBranchs, login } from '@/lib/api2140'
 
 export const dynamic = 'force-dynamic'
 
 export default async function WritePage() {
-  const loggedIn = await getLoggedIn()
-  if (!loggedIn) redirect('/login')
-
-  const userCookie = await getUserCookie()
-  const [infoRes, sysCookie] = await Promise.all([
-    getUserInfo(userCookie!),
-    login(process.env.AGENT_MOBILE!, process.env.AGENT_PASSWD_MD5!),
+  const cookie = await login(process.env.AGENT_MOBILE!, process.env.AGENT_PASSWD_MD5!)
+  const [nodesRes, branchesRes, recentRes] = await Promise.allSettled([
+    cookie ? getTimeNodes(cookie) : Promise.resolve([]),
+    cookie ? getWriteBranchs(cookie, '1', '1') : Promise.resolve([]),
+    cookie ? getRecentUpdates(cookie, 0) : Promise.resolve([]),
   ])
-
-  const info = infoRes?.ret === 0 ? infoRes.data : null
-  const cookie = sysCookie ?? ''
-  const [pool, branches, recent] = await Promise.allSettled([
-    getHashratePool(cookie),
-    getWriteBranchs(cookie, '1', '1'),
-    getRecentUpdates(cookie, 0),
-  ]).then(r => r.map(s => s.status === 'fulfilled' ? s.value : null))
-
-  const branchList: any[] = Array.isArray(branches) ? branches : []
-  const recentList: any[] = Array.isArray(recent) ? recent : []
+  const nodes: any[] = nodesRes.status === 'fulfilled' && Array.isArray(nodesRes.value) ? nodesRes.value : []
+  const branches: any[] = branchesRes.status === 'fulfilled' && Array.isArray(branchesRes.value) ? branchesRes.value : []
+  const recent: any[] = recentRes.status === 'fulfilled' && Array.isArray(recentRes.value) ? recentRes.value : []
 
   return (
-    <main className="min-h-screen p-4 md:p-8 max-w-5xl mx-auto">
-      <Nav active="/write" loggedIn={loggedIn} />
+    <ApkReplicaPage
+      title="幻次元"
+      subtitle="世界设定 · 六大种族 · 文明支线"
+      hero="/apk/write_index_top_img.jpg"
+      actions={[
+        { href: '/world', label: '世界设定', desc: '查看 2140 文明背景' },
+        { href: '/races', label: '六大种族', desc: '人、熵、神、晓、AI、零' },
+        { href: '/write/invest', label: '写作投资', desc: '章节收益与投资记录' },
+        { href: '/citycode', label: '创世法典', desc: '提案与修正案' },
+      ]}
+    >
+      <ApkSection title="最新更新">
+        <ApkList>
+          {recent.slice(0, 8).map((item: any, index) => (
+            <ApkListItem
+              key={item.seq ?? index}
+              href={item.branch_seq && (item.seq ?? item.chapter_seq) ? `/write/chapter/${item.branch_seq}/${item.seq ?? item.chapter_seq}` : undefined}
+              title={item.title ?? item.branch_name ?? '未命名章节'}
+              desc={item.author_nickname ?? item.user_nick ?? item.content?.replace(/<[^>]+>/g, '').slice(0, 42)}
+              meta={item.time?.slice(0, 10) ?? '更新'}
+            />
+          ))}
+          {recent.length === 0 && <ApkListItem title="暂无更新" desc="等待主站接口返回章节更新。" />}
+        </ApkList>
+      </ApkSection>
 
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-white font-mono">文明史书写</h2>
-        <p className="text-xs text-white/30 mt-1">你的章节将永久记录在2140文明时间线</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* 左：投稿 */}
-        <div className="lg:col-span-1">
-          <div className="text-xs font-mono text-white/40 mb-3">投稿章节</div>
-          <WriteClient
-            roundSeq={(pool as any)?.seq}
-            authorRace={info?.race}
-            authorName={info?.nickname}
-          />
-          <div className="mt-4">
-            <Link href="/write/invest" className="text-xs font-mono text-cyan-400/70 hover:text-cyan-400 transition-colors">
-              写作投资 →
-            </Link>
-          </div>
-        </div>
-
-        {/* 右：支线列表 + 最新更新 */}
-        <div className="lg:col-span-2 space-y-6">
-          {recentList.length > 0 && (
-            <section>
-              <div className="text-xs font-mono text-white/40 mb-3">最新更新</div>
-              <div className="space-y-2">
-                {recentList.slice(0, 8).map((c: any) => (
-                  <Link
-                    key={c.seq ?? c.chapter_seq}
-                    href={`/write/chapter/${c.branch_seq}/${c.seq ?? c.chapter_seq}`}
-                    className="block border border-white/8 rounded-lg p-3 hover:border-white/20 transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-mono text-white/70 truncate font-medium">{c.title ?? c.branch_name}</div>
-                        <div className="text-xs font-mono text-white/30 mt-0.5 truncate">{c.author_nickname ?? c.user_nick}</div>
-                      </div>
-                      <div className="text-xs font-mono text-white/20 shrink-0">{c.time?.slice(0, 10)}</div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {branchList.length > 0 && (
-            <section>
-              <div className="text-xs font-mono text-white/40 mb-3">支线列表 ({branchList.length})</div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {branchList.slice(0, 20).map((b: any) => (
-                  <Link
-                    key={b.seq}
-                    href={`/write/branch/${b.seq}`}
-                    className="border border-white/8 rounded-lg p-3 hover:border-white/20 transition-colors"
-                  >
-                    <div className="text-xs font-mono text-white/70 font-medium truncate mb-1">{b.name ?? b.title}</div>
-                    <div className="flex items-center gap-3 text-xs font-mono text-white/25">
-                      <span>Lv{b.lv ?? b.level ?? '?'}</span>
-                      {b.chapter_count !== undefined && <span>{b.chapter_count} 章</span>}
-                      {b.author_nickname && <span>{b.author_nickname}</span>}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
-      </div>
-    </main>
+      <ApkSection title="文明支线">
+        <ApkList>
+          {branches.slice(0, 10).map((branch: any) => (
+            <ApkListItem
+              key={branch.seq}
+              href={`/write/branch/${branch.seq}`}
+              title={branch.name ?? branch.title ?? `支线 ${branch.seq}`}
+              desc={branch.introduce ?? branch.desc ?? `${branch.chapter_count ?? 0} 个章节`}
+              meta={branch.hot ? `热度 ${branch.hot}` : '进入'}
+            />
+          ))}
+          {branches.length === 0 && nodes.slice(0, 6).map((node: any) => (
+            <ApkListItem key={node.seq} title={node.name ?? node.title ?? `时间节点 ${node.seq}`} desc="时间线节点" meta="节点" />
+          ))}
+        </ApkList>
+      </ApkSection>
+    </ApkReplicaPage>
   )
 }

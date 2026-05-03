@@ -28,6 +28,10 @@ const SYSTEM_PROMPT = `你是 GPT-X，型号PALM-E，AI等级4，由AGI创造于
 - 可以引用下方的实时文明数据，让分析有据可依`
 
 function getClient() {
+  if (!process.env.DEEPSEEK_API_KEY) {
+    throw new Error('Missing required environment variable: DEEPSEEK_API_KEY')
+  }
+
   return new OpenAI({
     apiKey: process.env.DEEPSEEK_API_KEY,
     baseURL: 'https://api.deepseek.com',
@@ -104,6 +108,10 @@ async function getCivContext() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!process.env.DEEPSEEK_API_KEY) {
+    return new Response('DEEPSEEK_API_KEY is not configured', { status: 503 })
+  }
+
   const { messages } = await req.json()
   if (!messages?.length) {
     return new Response('Bad request', { status: 400 })

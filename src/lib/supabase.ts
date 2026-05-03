@@ -11,11 +11,25 @@ export type AgentLog = {
 let _client: SupabaseClient | null = null
 let _admin: SupabaseClient | null = null
 
+export function hasSupabaseConfig() {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+  )
+}
+
+function requireSupabaseEnv(key: string) {
+  const value = process.env[key]
+  if (!value) throw new Error(`Missing required environment variable: ${key}`)
+  return value
+}
+
 export function getSupabase() {
   if (!_client) {
     _client = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      requireSupabaseEnv('NEXT_PUBLIC_SUPABASE_URL'),
+      requireSupabaseEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
     )
   }
   return _client
@@ -24,8 +38,8 @@ export function getSupabase() {
 export function getSupabaseAdmin() {
   if (!_admin) {
     _admin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      requireSupabaseEnv('NEXT_PUBLIC_SUPABASE_URL'),
+      requireSupabaseEnv('SUPABASE_SERVICE_ROLE_KEY'),
     )
   }
   return _admin

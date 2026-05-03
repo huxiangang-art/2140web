@@ -1,6 +1,6 @@
 import { Nav } from '@/components/Nav'
 import { TipButton } from '@/components/TipButton'
-import { getSupabaseAdmin } from '@/lib/supabase'
+import { getSupabaseAdmin, hasSupabaseConfig } from '@/lib/supabase'
 import { getLoggedIn } from '@/lib/auth'
 import { RACE_NAMES, RACE_COLORS } from '@/lib/api2140'
 import Link from 'next/link'
@@ -15,6 +15,8 @@ const AGENT_DESC: Record<string, string> = {
 }
 
 async function getData() {
+  if (!hasSupabaseConfig()) return {}
+
   const db = getSupabaseAdmin()
   const [logsRes, chaptersRes] = await Promise.all([
     db.from('agent_logs').select('*').order('created_at', { ascending: false }).limit(50),

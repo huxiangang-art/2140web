@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "smoke:metaverse": "node scripts/smoke-metaverse.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
@@ -17,7 +18,8 @@
     "@types/three": "^0.184.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^1.8.0",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^1.14.0",
     "msedge-tts": "^2.0.5",
     "next": "16.2.4",
     "openai": "^6.34.0",
@@ -35,6 +37,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "playwright": "^1.59.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

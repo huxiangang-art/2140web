@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Nav } from '@/components/Nav'
 import { getLoggedIn, getUserCookie } from '@/lib/auth'
 import { getBlindBoxList, login } from '@/lib/api2140'
@@ -45,7 +46,7 @@ export default async function BlindBoxPage() {
           {items.map((b: any) => {
             const color = STATUS_COLOR[b.status] ?? '#6b7280'
             return (
-              <div key={b.seq} className="border border-white/10 rounded-xl overflow-hidden bg-white/3"
+              <Link key={b.seq} href={`/blindbox/${b.seq}`} className="border border-white/10 rounded-xl overflow-hidden bg-white/3"
                 style={{ borderColor: b.status === '1' ? '#22c55e22' : undefined }}>
                 <div className="h-1 w-full" style={{ backgroundColor: color }} />
                 <div className="p-4">
@@ -84,7 +85,7 @@ export default async function BlindBoxPage() {
                     <div className="text-xs font-mono text-white/25">{b.time?.slice(0, 10)}</div>
                   )}
                 </div>
-              </div>
+              </Link>
             )
           })}
         </div>

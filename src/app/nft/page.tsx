@@ -1,60 +1,39 @@
-import { Nav } from '@/components/Nav'
-import { getLoggedIn } from '@/lib/auth'
+import { ApkList, ApkListItem, ApkReplicaPage, ApkSection } from '@/components/ApkReplicaPage'
 import { getNfts, login } from '@/lib/api2140'
 
 export const dynamic = 'force-dynamic'
 
-async function getData() {
-  try {
-    const cookie = await login(process.env.AGENT_MOBILE!, process.env.AGENT_PASSWD_MD5!)
-    if (!cookie) return []
-    return getNfts(cookie)
-  } catch { return [] }
-}
-
 export default async function NftPage() {
-  const [nfts, loggedIn] = await Promise.all([getData(), getLoggedIn()])
+  const cookie = await login(process.env.AGENT_MOBILE!, process.env.AGENT_PASSWD_MD5!)
+  const nfts: any[] = cookie ? await getNfts(cookie).catch(() => []) : []
 
   return (
-    <main className="min-h-screen p-4 md:p-8 max-w-5xl mx-auto">
-      <Nav active="/nft" loggedIn={loggedIn} />
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-white font-mono">NFT 星图</h2>
-        <p className="text-xs text-white/30 mt-1">文明创作 · 链上资产 · {nfts.length} 件</p>
-      </div>
-
-      {nfts.length === 0 ? (
-        <div className="text-center py-20 text-white/30 font-mono text-sm">暂无 NFT 数据</div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {nfts.map((n: any) => (
-            <div key={n.seq} className="border border-white/10 rounded-xl overflow-hidden bg-white/3 group">
-              <div className="relative aspect-square overflow-hidden">
-                {n.display_url ? (
-                  <img
-                    src={n.display_url.startsWith('http') ? n.display_url : `https://www.2140city.cn${n.display_url}`}
-                    alt={n.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                    <span className="text-white/20 font-mono text-xs">NFT</span>
-                  </div>
-                )}
-              </div>
-              <div className="p-3">
-                <div className="text-xs font-mono text-white/80 font-medium line-clamp-1 mb-1">{n.name}</div>
-                <div className="flex items-center gap-1.5">
-                  {n.creater_avatar && (
-                    <img src={n.creater_avatar} alt="" className="w-4 h-4 rounded-full" />
-                  )}
-                  <span className="text-xs font-mono text-white/35 truncate">{n.creater_nick}</span>
-                </div>
-              </div>
-            </div>
+    <ApkReplicaPage
+      title="2140数字藏品"
+      subtitle={`文明创作 · 链上资产 · ${nfts.length} 件`}
+      hero="/apk/nfts_bg.jpg"
+      heroClass="nft-hero"
+      actions={[
+        { href: '/nft/my', label: '我的 NFT', desc: '查看已拥有数字藏品' },
+        { href: '/store/nft-apply', label: 'NFT 申请', desc: '在 N生活发布作品' },
+        { href: '/nft/more', label: '更多藏品', desc: '浏览文明典藏室' },
+        { href: '/profile', label: '绑定信息', desc: '个人资产与账号' },
+      ]}
+    >
+      <ApkSection title="数字藏品">
+        <ApkList>
+          {nfts.slice(0, 16).map((item: any) => (
+            <ApkListItem
+              key={item.seq}
+              href={item.seq ? `/nft/${item.seq}` : '/nft'}
+              title={item.name ?? `NFT #${item.seq}`}
+              desc={item.creater_nick ?? item.user_nick ?? '2140 创作者'}
+              meta={item.price ? `${item.price}` : '查看'}
+            />
           ))}
-        </div>
-      )}
-    </main>
+          {nfts.length === 0 && <ApkListItem title="暂无 NFT 数据" desc="保留 APK 星图背景与数字藏品入口。" />}
+        </ApkList>
+      </ApkSection>
+    </ApkReplicaPage>
   )
 }
