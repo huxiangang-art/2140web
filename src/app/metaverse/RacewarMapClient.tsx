@@ -72,7 +72,7 @@ export function RacewarMapClient({
         </div>
       </CenteredRacewarScroll>
 
-      <div className="absolute left-0 right-0 top-0 h-0">
+      <div className="absolute left-0 right-0 top-0 z-20 h-0">
         <IconDock href="/" label="返回首页" iconClass="rw-return" edge="left" />
         <button type="button" onClick={() => setToolsOpen(true)} aria-label="搜索" className="absolute right-1 top-1 flex h-8 w-10 items-center justify-center rounded-bl-2xl rounded-tl-md rounded-br-md bg-black/45">
           <CornerSpriteIcon iconClass="rw-search" />
@@ -86,7 +86,7 @@ export function RacewarMapClient({
       </div>
 
       {mode === 'branch' && (
-        <button type="button" onClick={() => setMode('main')} className="absolute left-4 top-[10.5%] rounded border border-cyan-300/30 bg-black/62 px-3 py-1.5 text-xs font-mono text-cyan-100/75">
+        <button type="button" onClick={() => setMode('main')} className="absolute left-4 top-[10.5%] z-20 rounded border border-cyan-300/30 bg-black/62 px-3 py-1.5 text-xs font-mono text-cyan-100/75">
           前往主线
         </button>
       )}
@@ -111,17 +111,17 @@ export function RacewarMapClient({
         </div>
       )}
 
-      <Link href="/metaverse/agent/branch" className="absolute left-[16%] top-4 flex -translate-x-1/2 flex-col items-center text-cyan-300">
+      <Link href="/metaverse/agent/branch" className="absolute left-[16%] top-4 z-20 flex -translate-x-1/2 flex-col items-center text-cyan-300">
         <ScaledSpriteIcon iconClass="rw-icon-create" size="sm" />
         <span className="mt-0 rounded bg-black/45 px-1 text-[10px] font-mono text-white">{mode === 'branch' ? '创建基地' : '创建文明'}</span>
       </Link>
 
-      <Link href="/metaverse/worlds" className="absolute right-[13%] top-4 flex translate-x-1/2 flex-col items-center text-cyan-300">
+      <Link href="/metaverse/worlds" className="absolute right-[13%] top-4 z-20 flex translate-x-1/2 flex-col items-center text-cyan-300">
         <ScaledSpriteIcon iconClass="rw-icon-switch" size="sm" />
         <span className="mt-0 rounded bg-black/45 px-1 text-[10px] font-mono text-white">切换文明</span>
       </Link>
 
-      <div className="absolute right-0 top-[27%] rounded-l-2xl border-y border-l border-cyan-300/25 bg-black/65 px-1.5 py-3 shadow-[0_0_18px_rgba(34,211,238,0.16)]">
+      <div className="absolute right-0 top-[27%] z-20 rounded-l-2xl border-y border-l border-cyan-300/25 bg-black/65 px-1.5 py-3 shadow-[0_0_18px_rgba(34,211,238,0.16)]">
         <SideButton href="/metaverse/contribution" label="创世榜" iconClass="rw-icon-genesis" />
         <SideButton href="/metaverse/war/ranks" label="地票榜" iconClass="rw-icon-ticket" />
         <SideButton href="/plaza" label="广场" iconClass="rw-icon-plaza" />
@@ -129,12 +129,12 @@ export function RacewarMapClient({
 
       {selected && <QuickPanel debris={selected} onClose={() => setSelected(null)} />}
 
-      <div className="absolute bottom-[13%] left-1/2 -translate-x-1/2 rounded bg-red-700 px-3 py-1.5 text-center text-xs font-mono text-white shadow-lg">
+      <Link href="/metaverse/quests" className="absolute bottom-[13%] left-1/2 z-20 -translate-x-1/2 rounded bg-red-700 px-3 py-1.5 text-center text-xs font-mono text-white shadow-lg">
         完成新人任务领取福利!
         <span className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 border-x-[12px] border-t-[14px] border-x-transparent border-t-red-700" />
-      </div>
+      </Link>
 
-      <div className="absolute bottom-0 left-0 right-0 grid grid-cols-[64px_1fr_64px] items-end gap-1 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-2 pb-2 pt-8">
+      <div className="absolute bottom-0 left-0 right-0 z-20 grid grid-cols-[64px_1fr_64px] items-end gap-1 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-2 pb-2 pt-8">
         <button type="button" onClick={() => setMode('branch')} className="flex w-16 flex-col items-center text-cyan-300">
           <ScaledSpriteIcon iconClass="rw-icon-branch" size="large" />
           <span className="-mt-1 rounded border border-cyan-300 bg-black/60 px-1 py-0.5 text-[10px] font-mono text-white">前往支线</span>
@@ -190,7 +190,7 @@ function WorldMarker({ debris }: { debris: any }) {
 function QuickPanel({ debris, onClose }: { debris: any; onClose: () => void }) {
   const status = getDebrisStatus(debris.error_status)
   return (
-    <div className="absolute bottom-[26%] left-4 right-4 rounded-lg border border-cyan-300/25 bg-black/86 p-4 shadow-[0_0_24px_rgba(34,211,238,0.18)]">
+    <div className="absolute bottom-[26%] left-4 right-4 z-30 rounded-lg border border-cyan-300/25 bg-black/86 p-4 shadow-[0_0_24px_rgba(34,211,238,0.18)]">
       <div className="mb-2 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="truncate text-base font-mono font-bold text-white">{debris.name ?? '未知基地'}</div>

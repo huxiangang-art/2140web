@@ -36,7 +36,7 @@ export function CenteredRacewarScroll({ children }: { children: React.ReactNode 
   }, [])
 
   return (
-    <div ref={ref} className="rw-map-scroll absolute inset-0 overflow-x-auto overflow-y-hidden">
+    <div ref={ref} className="rw-map-scroll absolute inset-0 z-0 overflow-x-auto overflow-y-hidden">
       {children}
     </div>
   )
